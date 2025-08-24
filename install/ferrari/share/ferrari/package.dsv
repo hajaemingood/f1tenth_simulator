@@ -1,0 +1,9 @@
+source;share/ferrari/hook/pythonpath.ps1
+source;share/ferrari/hook/pythonpath.dsv
+source;share/ferrari/hook/pythonpath.sh
+source;share/ferrari/hook/ament_prefix_path.ps1
+source;share/ferrari/hook/ament_prefix_path.dsv
+source;share/ferrari/hook/ament_prefix_path.sh
+source;../../build/ferrari/share/ferrari/hook/pythonpath_develop.ps1
+source;../../build/ferrari/share/ferrari/hook/pythonpath_develop.dsv
+source;../../build/ferrari/share/ferrari/hook/pythonpath_develop.sh

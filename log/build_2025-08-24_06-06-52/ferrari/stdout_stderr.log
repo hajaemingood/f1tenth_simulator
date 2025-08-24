@@ -1,0 +1,34 @@
+running develop
+running egg_info
+creating ferrari.egg-info
+writing ferrari.egg-info/PKG-INFO
+writing dependency_links to ferrari.egg-info/dependency_links.txt
+writing entry points to ferrari.egg-info/entry_points.txt
+writing requirements to ferrari.egg-info/requires.txt
+writing top-level names to ferrari.egg-info/top_level.txt
+writing manifest file 'ferrari.egg-info/SOURCES.txt'
+reading manifest file 'ferrari.egg-info/SOURCES.txt'
+writing manifest file 'ferrari.egg-info/SOURCES.txt'
+running build_ext
+Creating /root/f1_sim/install/ferrari/lib/python3.8/site-packages/site.py
+Creating /root/f1_sim/install/ferrari/lib/python3.8/site-packages/ferrari.egg-link (link to .)
+Installing twist_to_vesc script to /root/f1_sim/install/ferrari/lib/ferrari
+
+Installed /root/f1_sim/build/ferrari
+running install_data
+creating /root/f1_sim/install/ferrari/share/ament_index
+creating /root/f1_sim/install/ferrari/share/ament_index/resource_index
+creating /root/f1_sim/install/ferrari/share/ament_index/resource_index/packages
+copying resource/ferrari -> /root/f1_sim/install/ferrari/share/ament_index/resource_index/packages
+copying package.xml -> /root/f1_sim/install/ferrari/share/ferrari
+creating /root/f1_sim/install/ferrari/share/ferrari/launch
+copying launch/sim.launch.py -> /root/f1_sim/install/ferrari/share/ferrari/launch
+copying launch/drive.launch.py -> /root/f1_sim/install/ferrari/share/ferrari/launch
+copying launch/ferrari.launch.py -> /root/f1_sim/install/ferrari/share/ferrari/launch
+creating /root/f1_sim/install/ferrari/share/ferrari/urdf
+copying urdf/lidar.xacro -> /root/f1_sim/install/ferrari/share/ferrari/urdf
+copying urdf/camera.xacro -> /root/f1_sim/install/ferrari/share/ferrari/urdf
+copying urdf/gazebo.xacro -> /root/f1_sim/install/ferrari/share/ferrari/urdf
+copying urdf/ferrari.xacro -> /root/f1_sim/install/ferrari/share/ferrari/urdf
+copying urdf/macros.xacro -> /root/f1_sim/install/ferrari/share/ferrari/urdf
+creating /root/f1_sim/install/ferrari/share/ferrari/map

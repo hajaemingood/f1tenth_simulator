@@ -1,0 +1,3 @@
+[console_scripts]
+twist_to_vesc = ferrari.Twist_to_VESC:main
+

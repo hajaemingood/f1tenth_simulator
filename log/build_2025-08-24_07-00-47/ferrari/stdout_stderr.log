@@ -1,0 +1,16 @@
+running develop
+running egg_info
+writing ferrari.egg-info/PKG-INFO
+writing dependency_links to ferrari.egg-info/dependency_links.txt
+writing entry points to ferrari.egg-info/entry_points.txt
+writing requirements to ferrari.egg-info/requires.txt
+writing top-level names to ferrari.egg-info/top_level.txt
+reading manifest file 'ferrari.egg-info/SOURCES.txt'
+writing manifest file 'ferrari.egg-info/SOURCES.txt'
+running build_ext
+Creating /root/f1_sim/install/ferrari/lib/python3.8/site-packages/ferrari.egg-link (link to .)
+Installing twist_to_vesc script to /root/f1_sim/install/ferrari/lib/ferrari
+
+Installed /root/f1_sim/build/ferrari
+running install_data
+copying urdf/macros.xacro -> /root/f1_sim/install/ferrari/share/ferrari/urdf
