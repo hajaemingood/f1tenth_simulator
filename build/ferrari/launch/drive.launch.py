@@ -1,1 +1,0 @@
-/root/f1_sim/src/ferrari/launch/drive.launch.py

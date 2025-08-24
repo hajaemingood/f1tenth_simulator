@@ -1,0 +1,13 @@
+# 빌드 결과물
+build/
+install/
+log/
+
+# Python 캐시
+__pycache__/
+*.pyc
+
+# 기타 불필요한 파일
+*.swp
+*.tmp
+*.log

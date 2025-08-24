@@ -1,1 +1,0 @@
-/root/f1_sim/src/ferrari/launch/ferrari.launch.py
