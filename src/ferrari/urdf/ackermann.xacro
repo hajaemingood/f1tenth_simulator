@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Gazebo + ros2_control 추가용 매크로 -->
+  <xacro:macro name="add_gazebo_and_ros2_control">
+    <gazebo>
+      <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+        <parameters>$(find ferrari)/config/controllers.yaml</parameters>
+      </plugin>
+    </gazebo>
+
+    <ros2_control name="ferrari_hw" type="system">
+      <hardware>
+        <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      </hardware>
+
+      <!-- 앞 조향: position -->
+      <joint name="front_left_steer_joint">
+        <command_interfaces>
+          <command_interface name="position"/>
+        </command_interfaces>
+        <state_interfaces>
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+        </state_interfaces>
+      </joint>
+
+      <joint name="front_right_steer_joint">
+        <command_interfaces>
+          <command_interface name="position"/>
+        </command_interfaces>
+        <state_interfaces>
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+        </state_interfaces>
+      </joint>
+
+      <!-- 앞바퀴 구동이 있다면 여기도 넣고 싶으면 추가 -->
+      <joint name="front_left_wheel_joint">
+        <command_interfaces>
+          <command_interface name="velocity"/>
+        </command_interfaces>
+        <state_interfaces>
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+        </state_interfaces>
+      </joint>
+
+      <joint name="front_right_wheel_joint">
+        <command_interfaces>
+          <command_interface name="velocity"/>
+        </command_interfaces>
+        <state_interfaces>
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+        </state_interfaces>
+      </joint>
+
+      <!-- 뒤 구동: velocity -->
+      <joint name="rear_left_wheel_joint">
+        <command_interfaces>
+          <command_interface name="velocity"/>
+        </command_interfaces>
+        <state_interfaces>
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+        </state_interfaces>
+      </joint>
+      <joint name="rear_right_wheel_joint">
+        <command_interfaces>
+          <command_interface name="velocity"/>
+        </command_interfaces>
+        <state_interfaces>
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+        </state_interfaces>
+      </joint>
+    </ros2_control>
+
+  </xacro:macro>
+</robot>
