@@ -11,7 +11,7 @@ class TwistToVESC(Node):
         # /key_vel 토픽을 읽어들여서 Twist 타입의 메시지가 들어올때마다 listener_callback()호출
         self.subscription = self.create_subscription(
             Twist,
-            '/key_vel',
+            '/cmd_vel',
             self.listener_callback,
             10)
 
@@ -25,8 +25,21 @@ class TwistToVESC(Node):
 
         # 제한된 범위의 duty cycle (e.g. max 0.1)
         motor_duty = max(min(msg.linear.x, 1.0), -1.0) * 0.1
+
+        # mapping parameter
+        steer_deg_max = 20.0
+        center = 0.5
+        use_normalized_input = True
+
+        if use_normalized_input:
+            z = max(min(msg.angular.z, 1.0), -1.0) # [-1 1] 
+            steer_deg = z * steer_deg_max # [-20 +20]
+        else:
+            steer_deg = max(min(msg.angular.z,steer_deg_max), -steer_deg_max)
+
         # 조향은 angular.z 값을 VESC servo position 범위 [0.0, 1.0]으로 매핑
-        servo_pos = 0.5 - 0.5 * msg.angular.z
+        servo_pos = center - 0.5 * (steer_deg/steer_deg_max)
+        servo_pos = max(min(servo_pos, 1.0), 0.0)
 
         # 클리핑 (안정성용), servo position을 0.0 ~ 1.0 범위로 제한
         servo_pos = max(min(servo_pos, 1.0), 0.0)

@@ -35,18 +35,20 @@
         <joint name="${name}_joint" type="continuous">
             <parent link="${parent_link}"/>
             <child link="${name}"/>
-            <origin xyz="${xyz}" rpy="${rpy}"/>
-            <axis xyz="0 0 ${direction}"/>
+            <origin xyz="${xyz}" rpy="0 0 0"/>
+            <axis xyz="0 1 0"/>
         </joint>
 
         <link name="${name}">
             <visual>
+                <origin xyz="0 0 0" rpy="${rpy}"/>
                 <geometry>
                     <cylinder radius="0.03" length="0.03"/>
                 </geometry>
                 <material name="black"/>
             </visual>
             <collision>
+                <origin xyz="0 0 0" rpy="${rpy}"/>
                 <geometry>
                     <cylinder radius="0.03" length="0.03"/>
                 </geometry>
