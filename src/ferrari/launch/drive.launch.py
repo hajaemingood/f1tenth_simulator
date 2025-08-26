@@ -81,15 +81,15 @@ def generate_launch_description():
     )
 
     # 앞바퀴 구동(속도)
-    front_drive_spawner = Node(
-        package="controller_manager",
-        executable=spawner_exec,
-        arguments=[
-            "front_drive_controller",
-            "--controller-manager", "/controller_manager",
-        ],
-        output="screen",
-    )
+    # front_drive_spawner = Node(
+    #     package="controller_manager",
+    #     executable=spawner_exec,
+    #     arguments=[
+    #         "front_drive_controller",
+    #         "--controller-manager", "/controller_manager",
+    #     ],
+    #     output="screen",
+    # )
 
     # 뒷바퀴 구동(속도)
     rear_drive_spawner = Node(
@@ -109,7 +109,7 @@ def generate_launch_description():
             on_exit=[
                 jsb_spawner,
                 front_steer_spawner,
-                front_drive_spawner,
+                # front_drive_spawner,
                 rear_drive_spawner,
             ],
         )
