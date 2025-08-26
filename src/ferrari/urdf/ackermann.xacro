@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="add_gazebo_and_ros2_control">
+    <gazebo>
+      <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+        <parameters>$(find ferrari)/config/controllers.yaml</parameters>
+      </plugin>
+    </gazebo>
+
+    <ros2_control name="ferrari_hw" type="system">
+      <hardware>
+        <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      </hardware>
+
+      <!-- 앞 조향: position 제어 -->
+      <joint name="front_left_steer_joint">
+        <command_interface name="position"/>
+        <state_interface   name="position"/>
+        <state_interface   name="velocity"/>
+      </joint>
+
+      <joint name="front_right_steer_joint">
+        <command_interface name="position"/>
+        <state_interface   name="position"/>
+        <state_interface   name="velocity"/>
+      </joint>
+
+      <!-- 뒤 구동: velocity 제어 -->
+      <joint name="rear_left_wheel_joint">
+        <command_interface name="velocity"/>
+        <state_interface   name="position"/>
+        <state_interface   name="velocity"/>
+      </joint>
+
+      <joint name="rear_right_wheel_joint">
+        <command_interface name="velocity"/>
+        <state_interface   name="position"/>
+        <state_interface   name="velocity"/>
+      </joint>
+    </ros2_control>
+
+  </xacro:macro>
+</robot>
