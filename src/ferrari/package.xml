@@ -28,7 +28,8 @@
   <!-- 메시지 (브릿지/노드에서 쓰면 추가) -->
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
-
+  <exec_depend>joy</exec_depend>
+  
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
