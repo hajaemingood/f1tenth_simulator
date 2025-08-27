@@ -99,6 +99,8 @@ class KbAckermann(Node):
             raise PermissionError(f"cannot open {path}: {e}\n"
                                   "도커 실행 시 --device /dev/input:/dev/input:ro 또는 --privileged 옵션 확인") from e
 
+        self._grabbed = False
+
         # 필요시 grab: 키가 터미널로 전달되지 않게 함
         if want_grab:
             try:
@@ -188,6 +190,12 @@ def main():
     except KeyboardInterrupt:
         pass
     finally:
+        # (C) 종료 시 grab 해제 (grab=False면 그냥 지나감)
+        try:
+            if getattr(node, '_grabbed', False):
+                node.dev.ungrab()
+        except Exception:
+            pass
         node.destroy_node()
         if rclpy.ok(): rclpy.shutdown()
 
