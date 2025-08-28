@@ -1,0 +1,20 @@
+imu_odom:
+  ros__parameters:
+    imu_topic: /imu/data
+    odom_topic: /imu_odom
+    odom_frame: odom
+    base_frame: base_link
+    publish_tf: true
+
+    mode: integrate_accel          # yaw_only 또는 integrate_accel
+    two_d_mode: true        # z, roll, pitch 무시
+
+    # 가속도 적분 모드일 때만 사용
+    accel_use: true
+    remove_gravity: true
+    accel_bias_init_samples: 500 # 정지 상태에서 500샘플 ≈ 10s(50Hz 가정)
+    accel_noise_sigma: 0.6   # m/s^2 대략값, 튜닝용
+    gyro_bias_correction: true
+
+    # 간단 저역통과 필터(가속도용)
+    accel_lpf_alpha: 0.1     # 0~1, 클수록 민감
