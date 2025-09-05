@@ -38,13 +38,5 @@ def generate_launch_description():
                 output="screen",
                 parameters=[params],
             ),
-            # # temp
-            # Node(
-            #     package='tf2_ros',
-            #     executable='static_transform_publisher',
-            #     name='static_tf_pub_map_to_base',
-            #     arguments=['0', '0', '0', '0', '0', '0', 'map', 'base_link'],
-            #     output='screen'
-            # ),
         ]
     )

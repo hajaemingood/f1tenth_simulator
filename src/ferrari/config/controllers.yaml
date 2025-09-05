@@ -1,31 +1,26 @@
-gazebo_ros2_control:
-  ros__parameters:
-    update_rate: 200
-    use_sim_time: true
+# ferrari/config/controllers.yaml
 
 controller_manager:
   ros__parameters:
-    update_rate: 200
+    update_rate: 100
+
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-    front_steer_controller:
-      type: position_controllers/JointGroupPositionController
+    # 커스텀 컨트롤러 등록(타입만 기입)
+    f1tenth_commands_controller:
+      type: F1TenthCommandsController
 
-    # front_drive_controller:
-    #   type: velocity_controllers/JointGroupVelocityController
-
-    rear_drive_controller:
-      type: velocity_controllers/JointGroupVelocityController
-
-front_steer_controller:
+# 커스텀 컨트롤러의 파라미터는 "동일 이름" 최상단 키에 별도로 넣는다
+f1tenth_commands_controller:
   ros__parameters:
-    joints: [front_left_steer_joint, front_right_steer_joint]
+    left_steer_joint:  "front_left_steer_joint"
+    right_steer_joint: "front_right_steer_joint"
+    left_wheel_joint:  "rear_left_wheel_joint"
+    right_wheel_joint: "rear_right_wheel_joint"
 
-# front_drive_controller:
-#   ros__parameters:
-#     joints: [front_left_wheel_joint, front_right_wheel_joint]
-
-rear_drive_controller:
-  ros__parameters:
-    joints: [rear_left_wheel_joint, rear_right_wheel_joint]
+    servo_center: 0.5
+    steer_max_left_rad:  -0.5236    # 30°
+    steer_max_right_rad: -0.5236    # 30°
+    servo_axis_inverted: false
+    erpm_per_radps: 300.0

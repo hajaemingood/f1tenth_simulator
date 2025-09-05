@@ -7,7 +7,15 @@
   <maintainer email="root@todo.todo">root</maintainer>
   <license>Apache-2.0</license>
 
-  <depend>rclpy</depend>
+  <!-- build tools -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+
+  <build_depend>rclcpp</build_depend>
+  <build_depend>controller_interface</build_depend>
+  <build_depend>hardware_interface</build_depend>
+  <build_depend>pluginlib</build_depend>
+  <build_depend>std_msgs</build_depend>
   
   <!-- 런치/설정에서 실제로 쓰는 실행 의존성 -->
   <exec_depend>ament_index_python</exec_depend>
@@ -25,6 +33,13 @@
   <exec_depend>position_controllers</exec_depend>
   <exec_depend>velocity_controllers</exec_depend>
 
+  <!-- runtime deps (실행에 필요) -->
+  <exec_depend>rclcpp</exec_depend>
+  <exec_depend>controller_interface</exec_depend>
+  <exec_depend>hardware_interface</exec_depend>
+  <exec_depend>pluginlib</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+
   <!-- 메시지 (브릿지/노드에서 쓰면 추가) -->
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
@@ -36,6 +51,7 @@
   <test_depend>python3-pytest</test_depend>
 
   <export>
-    <build_type>ament_python</build_type>
+    <build_type>ament_cmake</build_type>
+    <controller_interface plugin="${prefix}/plugins.xml"/>
   </export>
 </package>

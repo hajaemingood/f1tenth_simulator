@@ -25,9 +25,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'twist_to_vesc = ferrari.Twist_to_VESC:main',
             'key_teleop = ferrari.key_teleop:main',
-            'key_ackermann = ferrari.key_ackermann:main'
+            'key_ackermann = ferrari.key_ackermann:main',
         ],
     },
 )

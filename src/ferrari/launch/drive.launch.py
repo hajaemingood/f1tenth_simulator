@@ -69,37 +69,14 @@ def generate_launch_description():
         output="screen",
     )
 
-    # 앞바퀴 조향(포지션)
-    front_steer_spawner = Node(
-        package="controller_manager",
-        executable=spawner_exec,
-        arguments=[
-            "front_steer_controller",
-            "--controller-manager", "/controller_manager",
-        ],
-        output="screen",
-    )
-
-    # 앞바퀴 구동(속도)
-    # front_drive_spawner = Node(
-    #     package="controller_manager",
-    #     executable=spawner_exec,
-    #     arguments=[
-    #         "front_drive_controller",
-    #         "--controller-manager", "/controller_manager",
-    #     ],
-    #     output="screen",
-    # )
-
-    # 뒷바퀴 구동(속도)
-    rear_drive_spawner = Node(
-        package="controller_manager",
-        executable=spawner_exec,
-        arguments=[
-            "rear_drive_controller",
-            "--controller-manager", "/controller_manager",
-        ],
-        output="screen",
+    f1_spawner = Node(
+    package="controller_manager",
+    executable=spawner_exec,
+    arguments=[
+        "f1tenth_commands_controller",
+        "--controller-manager", "/controller_manager",
+    ],
+    output="screen",
     )
 
     # 로봇이 스폰된 뒤 컨트롤러 스폰 (spawn_entity 종료 이벤트에 연결)
@@ -108,9 +85,7 @@ def generate_launch_description():
             target_action=spawn_entity,
             on_exit=[
                 jsb_spawner,
-                front_steer_spawner,
-                # front_drive_spawner,
-                rear_drive_spawner,
+                f1_spawner
             ],
         )
     )
