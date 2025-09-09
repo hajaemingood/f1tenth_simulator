@@ -1,4 +1,3 @@
-
 ros2 launch ferrari drive.launch.py use_sim_time:=true
 ㄴ 시뮬레이터 런치 파일 실행
 
