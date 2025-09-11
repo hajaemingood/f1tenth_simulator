@@ -1,5 +1,6 @@
 wheel_odom:
   ros__parameters:
+    use_sim_time: true
     wheelbase: 1.55
     wheel_radius: 0.05
     odom_frame: odom

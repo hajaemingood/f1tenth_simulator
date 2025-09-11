@@ -66,6 +66,7 @@ def generate_launch_description():
             "joint_state_broadcaster",
             "--controller-manager", "/controller_manager",
         ],
+        parameters=[{"use_sim_time": use_sim_time}],
         output="screen",
     )
 
@@ -76,6 +77,7 @@ def generate_launch_description():
             "f1tenth_commands_controller",
             "--controller-manager", "/controller_manager",
         ],
+        parameters=[{"use_sim_time": use_sim_time}],
         output="screen",
     )
 

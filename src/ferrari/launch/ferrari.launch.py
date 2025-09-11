@@ -26,7 +26,8 @@ def generate_launch_description():
         package="joint_state_publisher",
         executable="joint_state_publisher",
         name="joint_state_publisher",
-        output="screen"
+        output="screen",
+        parameters=[params],
     )
     
     robot_state = Node(
@@ -39,7 +40,7 @@ def generate_launch_description():
     return LaunchDescription(
         [
             DeclareLaunchArgument(
-                "use_sim_time", default_value="false", description="use sim time"
+                "use_sim_time", default_value="true", description="use sim time"
             ),
             jount_pub,
             robot_state,

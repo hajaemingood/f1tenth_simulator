@@ -1,5 +1,6 @@
 ekf_se_odom:
   ros__parameters:
+    use_sim_time: true
     frequency: 50.0
     two_d_mode: true
     publish_tf: true
