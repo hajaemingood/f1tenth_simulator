@@ -26,7 +26,6 @@ setup(
     entry_points={
         'console_scripts': [
             'key_teleop = ferrari.key_teleop:main',
-            'key_ackermann = ferrari.key_ackermann:main',
         ],
     },
 )

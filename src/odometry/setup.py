@@ -24,7 +24,6 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'imu_odom = odometry.imu_odom_node:main',
             'wheel_odom = odometry.wheel_odom_node:main',
         ],
     },

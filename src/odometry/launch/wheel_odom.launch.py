@@ -12,5 +12,12 @@ def generate_launch_description():
             name='wheel_odom',
             output='screen',
             parameters=[os.path.join(pkg, 'config', 'wheel_odom.yaml')],
-        )
+        ),
+        Node(
+            package='robot_localization',
+            executable='ekf_node',
+            name='ekf_se_odom',
+            output='screen',
+            parameters=[os.path.join(pkg, 'config', 'ekf_wheel_imu.yaml')],
+        ),
     ])
