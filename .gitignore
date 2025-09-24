@@ -11,3 +11,5 @@ __pycache__/
 *.swp
 *.tmp
 *.log
+!src/robot_localization//**
+!src/slam_toolbox//**
