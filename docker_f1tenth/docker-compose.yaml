@@ -1,0 +1,45 @@
+services:
+  ros2-foxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ros2-foxy:f1            # 로컬에 빌드되는 이미지 태그
+    container_name: ros2_foxy
+    restart: unless-stopped
+
+    # ROS2 통신/지연 최소화 + IPC
+    network_mode: host
+    ipc: host
+
+    # NVIDIA GPU
+    gpus: all
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+
+      # X11 GUI
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      # 필요시 응급용:
+      # - LIBGL_ALWAYS_SOFTWARE=1
+      # - __GLX_VENDOR_LIBRARY_NAME=nvidia
+
+    # evdev로 키보드 이벤트를 읽으려면 장치 전달 필요
+    privileged: true
+    devices:
+      - "/dev/input:/dev/input:ro"
+
+    tty: true
+    stdin_open: true
+
+    volumes:
+      # X11 소켓
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      # 프로젝트/데이터 마운트
+      - ${HOME}/f1tenth_simulator:/root/f1tenth_simulator
+      - ${HOME}/container_data:/root/container_data
+
+    working_dir: /root/f1tenth_simulator
+
+    # 컨테이너 생존 + ROS env 적용
+    command: ["bash", "-lc", "source /opt/ros/foxy/setup.bash && sleep infinity"]
