@@ -1,0 +1,9 @@
+<launch>
+  <include file="$(find f1tenth_simulator)/launch/simulator.launch">
+    <arg name="map" value="$(find f1tenth_simulator)/maps/columbia.yaml" />
+  </include>
+
+  <node pkg="pure_pursuit" type="pure_pursuit.py" name="pure_pursuit_node" output="screen"/>
+  <node pkg="pure_pursuit" type="waypoint_visualization.py" name="waypoint_visualization_node"/>
+
+</launch>
