@@ -62,6 +62,8 @@ def generate_launch_description() -> LaunchDescription:
             {"alpha2": 0.2},
             {"alpha3": 0.2},
             {"alpha4": 0.2},
+            # Keep legacy PoseArray particle cloud so RViz PoseArray display works.
+            {"use_particle_cloud_message_type": False},
             {"initial_pose": {
                 "x": initial_pose_x,
                 "y": initial_pose_y,

@@ -14,7 +14,7 @@ class WaypointVisualizer(Node):
 
         self.declare_parameter(
             "waypoints_csv",
-            "/root/f1_sim/src/ferrari/ferrari/path_controller/waypoints.csv",
+            "/root/f1_sim/src/path_planner/path_planner/waypoints.csv",
         )
         self.declare_parameter("frame_id", "map")
 

@@ -13,6 +13,8 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
         (os.path.join('share', package_name, 'maps'), glob('maps/*')),
+        (os.path.join('share', package_name, 'data'), glob('path_planner/*.csv')),
+        (os.path.join('share', package_name, 'data'), glob('path_planner/*.npy')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

@@ -40,7 +40,7 @@ class WheelOdomNode(Node):
 
         # 차량 기하/프레임/토픽
         self.declare_parameter('wheelbase', 1.55)                # [m]
-        self.declare_parameter('wheel_radius', 0.03)             # [m]
+        self.declare_parameter('wheel_radius', 0.05)             # [m]
         self.declare_parameter('odom_frame', 'odom')
         self.declare_parameter('base_frame', 'base_link')
         self.declare_parameter('odom_topic', '/wheel_odom')
