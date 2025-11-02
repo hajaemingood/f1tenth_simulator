@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: ros2-foxy:f1            # 로컬에 빌드되는 이미지 태그
-    container_name: ros2_foxy
+    container_name: f1_simulator
     restart: unless-stopped
 
     # ROS2 통신/지연 최소화 + IPC
