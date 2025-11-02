@@ -6,13 +6,14 @@ SHELL ["/bin/bash", "-lc"]
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential cmake git python3-pip \
     python3-colcon-common-extensions \
-    mesa-utils x11-apps nano \
+    mesa-utils x11-apps nano python3-tk \
     ros-foxy-xacro \
     ros-foxy-ros2-control ros-foxy-ros2-controllers ros-foxy-hardware-interface ros-foxy-pluginlib \
     ros-foxy-gazebo-ros-pkgs ros-foxy-gazebo-ros2-control \
     ros-foxy-joint-state-publisher ros-foxy-joint-state-publisher-gui ros-foxy-robot-state-publisher \
     ros-foxy-teleop-twist-keyboard \
     ros-foxy-geographic-msgs ros-foxy-nav2-map-server \
+    ros-foxy-tf-transformations python3-networkx python3-scipy python3-skimage python3-pandas \ 
     && rm -rf /var/lib/apt/lists/*
 
 # key_teleop용 evdev (파이썬 모듈)

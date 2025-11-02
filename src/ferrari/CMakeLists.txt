@@ -56,6 +56,7 @@ install(FILES plugins.xml DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY config/  DESTINATION share/${PROJECT_NAME}/config OPTIONAL)
 install(DIRECTORY launch/  DESTINATION share/${PROJECT_NAME}/launch OPTIONAL)
 install(DIRECTORY urdf/  DESTINATION share/${PROJECT_NAME}/urdf OPTIONAL)
+install(DIRECTORY maps/  DESTINATION share/${PROJECT_NAME}/maps OPTIONAL)
 install(PROGRAMS
   ${CMAKE_CURRENT_SOURCE_DIR}/ferrari/key_teleop.py
   DESTINATION lib/${PROJECT_NAME}
