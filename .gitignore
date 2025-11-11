@@ -2,7 +2,7 @@
 build/
 install/
 log/
-
+src/ferrari/bagfiles/
 # Python 캐시
 __pycache__/
 *.pyc
