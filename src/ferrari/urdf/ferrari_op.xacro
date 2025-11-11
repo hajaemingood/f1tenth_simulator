@@ -23,12 +23,13 @@
     <xacro:property name="camera_optical_link_name" value="${'camera_link_optical' + suffix}"/>
     <xacro:property name="imu_link_name" value="${'imu_link' + suffix}"/>
     <xacro:property name="body_joint_name" value="${'body_joint' + suffix}"/>
-    <xacro:property name="fl_steer_joint" value="${'front_left_steer_joint' + suffix}"/>
-    <xacro:property name="fr_steer_joint" value="${'front_right_steer_joint' + suffix}"/>
-    <xacro:property name="fl_wheel_joint" value="${'front_left_wheel_joint' + suffix}"/>
-    <xacro:property name="fr_wheel_joint" value="${'front_right_wheel_joint' + suffix}"/>
-    <xacro:property name="rl_wheel_joint" value="${'rear_left_wheel_joint' + suffix}"/>
-    <xacro:property name="rr_wheel_joint" value="${'rear_right_wheel_joint' + suffix}"/>
+    <!-- Actuated joint names는 두 차량이 동일(ros2_control 연동 용) -->
+    <xacro:property name="fl_steer_joint" value="front_left_steer_joint"/>
+    <xacro:property name="fr_steer_joint" value="front_right_steer_joint"/>
+    <xacro:property name="fl_wheel_joint" value="front_left_wheel_joint"/>
+    <xacro:property name="fr_wheel_joint" value="front_right_wheel_joint"/>
+    <xacro:property name="rl_wheel_joint" value="rear_left_wheel_joint"/>
+    <xacro:property name="rr_wheel_joint" value="rear_right_wheel_joint"/>
     <xacro:property name="caster_joint_name" value="${'caster_wheel_joint' + suffix}"/>
     <xacro:property name="laser_joint_name" value="${'laser_joint' + suffix}"/>
     <xacro:property name="camera_joint_name" value="${'camera_joint' + suffix}"/>
@@ -273,7 +274,7 @@
     <xacro:include filename="camera.xacro"/>
     <xacro:include filename="imu.xacro"/>
     
-    <xacro:add_gazebo_and_ros2_control joint_suffix="${suffix}" controllers_file="$(find ferrari)/config/controllers_op.yaml" ros_namespace="${robot_ns}" hardware_name="ferrari_op_hw"/>
+    <xacro:add_gazebo_and_ros2_control joint_suffix="" controllers_file="$(find ferrari)/config/controllers_op.yaml" ros_namespace="${robot_ns}" hardware_name="ferrari_op_hw"/>
     <xacro:add_lidar frame_suffix="${suffix}" ros_namespace="${robot_ns}"/>
     <xacro:add_camera frame_suffix="${suffix}" ros_namespace="${robot_ns}"/>
     <xacro:add_imu frame_suffix="${suffix}" ros_namespace="${robot_ns}"/>
