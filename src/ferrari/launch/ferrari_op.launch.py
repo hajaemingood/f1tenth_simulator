@@ -1,4 +1,3 @@
-# ferrari.launch.py
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -11,16 +10,20 @@ from launch_ros.parameter_descriptions import ParameterValue
 def generate_launch_description():
     package_name = "ferrari"
     use_sim_time = LaunchConfiguration("use_sim_time")
+    frame_suffix = LaunchConfiguration("frame_suffix")
     ros_namespace = LaunchConfiguration("ros_namespace")
 
     pkg_path = get_package_share_directory(package_name)
-    xacro_file = os.path.join(pkg_path, "urdf", "ferrari.xacro")
+    xacro_file = os.path.join(pkg_path, "urdf", "ferrari_op.xacro")
 
     robot_description_cmd = Command(
         [
             FindExecutable(name="xacro"),
             " ",
             xacro_file,
+            " ",
+            "frame_suffix:=",
+            frame_suffix,
             " ",
             "ros_namespace:=",
             ros_namespace,
@@ -55,6 +58,9 @@ def generate_launch_description():
         [
             DeclareLaunchArgument(
                 "use_sim_time", default_value="true", description="use sim time"
+            ),
+            DeclareLaunchArgument(
+                "frame_suffix", default_value="_op", description="Suffix applied to joint/link names."
             ),
             DeclareLaunchArgument(
                 "ros_namespace",
