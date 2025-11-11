@@ -1,7 +1,7 @@
 # 빌드 결과물
 build/
 install/
-log/
+log/git commit -m "ignore: bagfiles and bag-like formats"
 # Python 캐시
 __pycache__/
 *.pyc
