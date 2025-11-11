@@ -2,7 +2,6 @@
 build/
 install/
 log/
-src/ferrari/bagfiles/
 # Python 캐시
 __pycache__/
 *.pyc
@@ -13,3 +12,9 @@ __pycache__/
 *.log
 !src/robot_localization//**
 !src/slam_toolbox//**
+src/ferrari/bagfiles/
+**/bagfiles/
+*.bag
+*.bag.active
+*.db3
+*.mcap
