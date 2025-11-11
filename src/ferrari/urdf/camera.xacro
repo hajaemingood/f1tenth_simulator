@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:macro name="add_camera" params="frame_suffix:=''">
+    <xacro:macro name="add_camera" params="frame_suffix:='' ros_namespace:='' camera_topic_prefix:='camera' camera_sensor_name:='camera'">
         <xacro:property name="camera_link" value="${'camera_link' + frame_suffix}"/>
         <xacro:property name="camera_optical_link" value="${'camera_link_optical' + frame_suffix}"/>
-        <xacro:property name="camera_sensor_name" value="${'camera' + frame_suffix}"/>
+        <xacro:property name="camera_sensor_name_value" value="${camera_sensor_name}"/>
+        <xacro:property name="camera_topic_prefix_full" value="${'/' + ros_namespace + '/' + camera_topic_prefix if ros_namespace != '' else camera_topic_prefix}"/>
 
         <gazebo reference="${camera_link}">
             <material>Gazebo/Red</material>
-            <sensor name="${camera_sensor_name}" type="camera">
+            <sensor name="${camera_sensor_name_value}" type="camera">
                 <pose>0 0 0 0 0 0</pose>
                 <visualize>true</visualize>
                 <update_rate>10</update_rate>
@@ -25,6 +26,10 @@
                     </clip>
                 </camera>
                 <plugin name="${'camera_controller' + frame_suffix}" filename="libgazebo_ros_camera.so">
+                    <ros>
+                        <argument>~/image_raw:=${camera_topic_prefix_full}/image_raw</argument>
+                        <argument>~/camera_info:=${camera_topic_prefix_full}/camera_info</argument>
+                    </ros>
                     <frame_name>${camera_optical_link}</frame_name>
                     <min_depth>0.1</min_depth>
                     <max_depth>100.0</max_depth>

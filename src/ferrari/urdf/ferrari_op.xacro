@@ -274,8 +274,8 @@
     <xacro:include filename="imu.xacro"/>
     
     <xacro:add_gazebo_and_ros2_control joint_suffix="${suffix}" controllers_file="$(find ferrari)/config/controllers_op.yaml" ros_namespace="${robot_ns}" hardware_name="ferrari_op_hw"/>
-    <xacro:add_lidar frame_suffix="${suffix}"/>
-    <xacro:add_camera frame_suffix="${suffix}"/>
-    <xacro:add_imu frame_suffix="${suffix}"/>
+    <xacro:add_lidar frame_suffix="${suffix}" ros_namespace="${robot_ns}"/>
+    <xacro:add_camera frame_suffix="${suffix}" ros_namespace="${robot_ns}"/>
+    <xacro:add_imu frame_suffix="${suffix}" ros_namespace="${robot_ns}"/>
     
 </robot>

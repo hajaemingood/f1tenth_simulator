@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <xacro:macro name="add_imu" params="frame_suffix:=''">
+  <xacro:macro name="add_imu" params="frame_suffix:='' ros_namespace:=''">
     <xacro:property name="imu_link_name" value="${'imu_link' + frame_suffix}"/>
     <xacro:property name="imu_sensor_name" value="${'imu' + frame_suffix}"/>
+    <xacro:property name="imu_topic" value="${'/' + ros_namespace + '/imu/data' if ros_namespace != '' else 'imu/data'}"/>
 
     <!-- imu_link 또는 imu_frame 이름의 링크가 URDF 안에 존재해야 합니다 -->
     <gazebo reference="${imu_link_name}">
@@ -77,7 +78,7 @@
         <plugin name="${'imu_plugin' + frame_suffix}" filename="libgazebo_ros_imu_sensor.so">
           <ros>
             <!-- ~/out 기본 토픽을 원하는 이름으로 리매핑 -->
-            <argument>~/out:=imu/data</argument>
+            <argument>~/out:=${imu_topic}</argument>
           </ros>
           <frame_name>${imu_link_name}</frame_name>
         </plugin>

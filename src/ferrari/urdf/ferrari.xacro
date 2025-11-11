@@ -246,8 +246,8 @@
     <xacro:include filename="imu.xacro"/>
 
     <xacro:add_gazebo_and_ros2_control ros_namespace="${robot_ns}"/>
-    <xacro:add_lidar/>
-    <xacro:add_camera/>
-    <xacro:add_imu/>
+    <xacro:add_lidar ros_namespace="${robot_ns}"/>
+    <xacro:add_camera ros_namespace="${robot_ns}"/>
+    <xacro:add_imu ros_namespace="${robot_ns}"/>
     
 </robot>
