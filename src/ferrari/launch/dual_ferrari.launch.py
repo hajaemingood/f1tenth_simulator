@@ -28,7 +28,7 @@ def _robot_group(
         PythonLaunchDescriptionSource([launch_path]),
         launch_arguments={
             "use_sim_time": use_sim_time,
-            "ros_namespace": namespace,
+            "robot_ros_namespace": namespace,
             **extra_launch_args,
         }.items(),
     )

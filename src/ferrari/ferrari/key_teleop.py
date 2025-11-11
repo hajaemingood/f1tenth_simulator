@@ -41,8 +41,8 @@ class KeyTeleop(Node):
         self.debug        = bool(g('debug'))
 
         # === 퍼블리셔 ===
-        self.pub_speed = self.create_publisher(Float64, '/commands/motor/speed', 10)
-        self.pub_steer = self.create_publisher(Float64, '/commands/servo/position', 10)
+        self.pub_speed = self.create_publisher(Float64, 'commands/motor/speed', 10)
+        self.pub_steer = self.create_publisher(Float64, 'commands/servo/position', 10)
 
         # === 상태 ===
         self.down = set()  # 눌린 키 집합

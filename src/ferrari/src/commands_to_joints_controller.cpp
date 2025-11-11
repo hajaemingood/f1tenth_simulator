@@ -51,7 +51,7 @@ public:
 
     // 구독자 생성(foxy에선 init에서 만들어도 OK)
     sub_servo_ = node->create_subscription<std_msgs::msg::Float64>(
-      "/commands/servo/position", rclcpp::QoS(10),
+      "commands/servo/position", rclcpp::QoS(10),
       [this](const std_msgs::msg::Float64::SharedPtr m){
         double v = m->data;
         if (v < 0.0) v = 0.0;
@@ -60,7 +60,7 @@ public:
       });
 
     sub_motor_ = node->create_subscription<std_msgs::msg::Float64>(
-      "/commands/motor/speed", rclcpp::QoS(10),
+      "commands/motor/speed", rclcpp::QoS(10),
       [this](const std_msgs::msg::Float64::SharedPtr m){
         erpm_in_ = m->data;
       });

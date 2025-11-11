@@ -6,11 +6,11 @@ ekf_se_odom:
     publish_tf: true
 
     map_frame: map
-    odom_frame: odom
+    odom_frame: odom_op
     base_link_frame: base_link
-    world_frame: odom
+    world_frame: odom_op
 
-    odom0: /wheel_odom
+    odom0: /wheel_odom_op
     odom0_config: [true,  true,  false,
                    false, false, false,
                    true,  true,  false,
@@ -18,7 +18,7 @@ ekf_se_odom:
     odom0_differential: false
     odom0_relative:     false
 
-    imu0: //ferrari/imu/data
+    imu0: /ferrari_op/imu/data
     imu0_config: [false, false, false,
                   false, false, true,
                   false, false, false,

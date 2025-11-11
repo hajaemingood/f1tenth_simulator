@@ -8,16 +8,16 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='odometry',
-            executable='wheel_odom',
-            name='wheel_odom',
+            executable='wheel_odom_op',
+            name='wheel_odom_op',
             output='screen',
-            parameters=[os.path.join(pkg, 'config', 'wheel_odom.yaml')],
+            parameters=[os.path.join(pkg, 'config', 'wheel_odom_op.yaml')],
         ),
         Node(
             package='robot_localization',
             executable='ekf_node',
-            name='ekf_se_odom_op',
+            name='ekf_se_odom',
             output='screen',
-            parameters=[os.path.join(pkg, 'config', 'ekf_wheel_imu_op.yaml')],
+            parameters=[os.path.join(pkg, 'config', 'ekf_wheel_imu.yaml')],
         ),
     ])

@@ -36,20 +36,20 @@ def q_to_yaw(z: float, w: float) -> float:
 
 class WheelOdomNode(Node):
     def __init__(self) -> None:
-        super().__init__('wheel_odom')
+        super().__init__('wheel_odom_op')
 
         # 차량 기하/프레임/토픽
         self.declare_parameter('wheelbase', 1.55)                # [m]
         self.declare_parameter('wheel_radius', 0.05)             # [m]
-        self.declare_parameter('odom_frame', 'odom')
-        self.declare_parameter('base_frame', 'base_link')
-        self.declare_parameter('odom_topic', '/wheel_odom')
+        self.declare_parameter('odom_frame', 'odom_op')
+        self.declare_parameter('base_frame', 'base_link_op')
+        self.declare_parameter('odom_topic', '/wheel_odom_op')
         self.declare_parameter('publish_tf', False)              # 현재 노드는 TF 발행 안 함(옵션 자리)
         self.declare_parameter('body_forward_sign', 1.0)         # 전진이 +X가 되도록 필요시 -1.0
 
         # IMU
         self.declare_parameter('use_imu_heading', True)
-        self.declare_parameter('imu_topic', '/ferrari/imu/data')
+        self.declare_parameter('imu_topic', '/ferrari_op/imu/data')
 
         # 모터/서보 스케일
         self.declare_parameter('erpm_per_radps', 300.0)          # 예: 300 ERPM = 1 rad/s

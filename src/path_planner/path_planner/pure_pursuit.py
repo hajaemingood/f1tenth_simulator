@@ -27,8 +27,8 @@ class PurePursuitNode(Node):
 
         self.waypoints = self._load_waypoints(self.waypoints_path)
 
-        self.motor_pub = self.create_publisher(Float64, "/commands/motor/speed", 10)
-        self.servo_pub = self.create_publisher(Float64, "/commands/servo/position", 10)
+        self.motor_pub = self.create_publisher(Float64, "commands/motor/speed", 10)
+        self.servo_pub = self.create_publisher(Float64, "commands/servo/position", 10)
 
         self.create_subscription(Pose2D, "/base_link_pose", self._base_callback, 10)
 

@@ -4,12 +4,12 @@ wheel_odom:
     wheelbase: 1.55
     wheel_radius: 0.05
     odom_frame: odom
-    base_frame: base_link
-    odom_topic: /wheel_odom
+    base_frame: base_link_op
+    odom_topic: /wheel_odom_op
     publish_tf: false
     body_forward_sign: 1.0
     use_imu_heading: true
-    imu_topic: /ferrari/imu/data
+    imu_topic: /ferrari_op/imu/data
     erpm_per_radps: 300.0
     servo_center: 0.5
     max_steer_rad: 0.5

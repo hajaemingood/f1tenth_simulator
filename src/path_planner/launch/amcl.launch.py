@@ -8,7 +8,7 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description() -> LaunchDescription:
-    ferrari_share = get_package_share_directory("ferrari")
+    ferrari_share = get_package_share_directory("ferrari_op")
 
     use_sim_time = LaunchConfiguration("use_sim_time")
     map_yaml = LaunchConfiguration("map")
