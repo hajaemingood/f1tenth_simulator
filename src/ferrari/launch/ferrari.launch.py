@@ -11,7 +11,7 @@ from launch_ros.parameter_descriptions import ParameterValue
 def generate_launch_description():
     package_name = "ferrari"
     use_sim_time = LaunchConfiguration("use_sim_time")
-    ros_namespace = LaunchConfiguration("ros_namespace")
+    robot_ros_namespace = LaunchConfiguration("robot_ros_namespace")
 
     pkg_path = get_package_share_directory(package_name)
     xacro_file = os.path.join(pkg_path, "urdf", "ferrari.xacro")
@@ -23,7 +23,7 @@ def generate_launch_description():
             xacro_file,
             " ",
             "ros_namespace:=",
-            ros_namespace,
+            robot_ros_namespace,
         ]
     )
 
@@ -53,7 +53,7 @@ def generate_launch_description():
                 "use_sim_time", default_value="true", description="use sim time"
             ),
             DeclareLaunchArgument(
-                "ros_namespace",
+                "robot_ros_namespace",
                 default_value="",
                 description="Namespace applied to this robot instance.",
             ),

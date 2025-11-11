@@ -11,7 +11,7 @@ def generate_launch_description():
     package_name = "ferrari"
     use_sim_time = LaunchConfiguration("use_sim_time")
     frame_suffix = LaunchConfiguration("frame_suffix")
-    ros_namespace = LaunchConfiguration("ros_namespace")
+    robot_ros_namespace = LaunchConfiguration("robot_ros_namespace")
 
     pkg_path = get_package_share_directory(package_name)
     xacro_file = os.path.join(pkg_path, "urdf", "ferrari_op.xacro")
@@ -26,7 +26,7 @@ def generate_launch_description():
             frame_suffix,
             " ",
             "ros_namespace:=",
-            ros_namespace,
+            robot_ros_namespace,
         ]
     )
 
@@ -59,7 +59,7 @@ def generate_launch_description():
                 "frame_suffix", default_value="_op", description="Suffix applied to joint/link names."
             ),
             DeclareLaunchArgument(
-                "ros_namespace",
+                "robot_ros_namespace",
                 default_value="",
                 description="Namespace applied to this robot instance.",
             ),
