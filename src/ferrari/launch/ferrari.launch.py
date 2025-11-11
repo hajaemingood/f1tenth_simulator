@@ -36,19 +36,15 @@ def generate_launch_description():
         package="joint_state_publisher",
         executable="joint_state_publisher",
         name="joint_state_publisher",
-        namespace=ros_namespace,
         output="screen",
         parameters=[params],
-        remappings=[("robot_description", LaunchConfiguration("robot_description_topic"))],
     )
 
     robot_state = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
-        namespace=ros_namespace,
         output="screen",
         parameters=[params],
-        remappings=[("robot_description", LaunchConfiguration("robot_description_topic"))],
     )
 
     return LaunchDescription(
@@ -60,11 +56,6 @@ def generate_launch_description():
                 "ros_namespace",
                 default_value="",
                 description="Namespace applied to this robot instance.",
-            ),
-            DeclareLaunchArgument(
-                "robot_description_topic",
-                default_value="/robot_description",
-                description="Fully-qualified robot_description topic to publish",
             ),
             joint_pub,
             robot_state,

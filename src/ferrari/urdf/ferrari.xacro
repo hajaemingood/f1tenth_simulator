@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="ferrari" >
 
+    <xacro:arg name="ros_namespace" default=""/>
+    <xacro:property name="robot_ns" value="$(arg ros_namespace)"/>
+
     <!--MACROS-->
     <xacro:include filename="macros.xacro"/>
 
@@ -238,9 +241,13 @@
 
     <!--GAZEBO-->
     <xacro:include filename="ackermann.xacro"/>
-    <xacro:add_gazebo_and_ros2_control/>
     <xacro:include filename="lidar.xacro"/>
     <xacro:include filename="camera.xacro"/>
     <xacro:include filename="imu.xacro"/>
+
+    <xacro:add_gazebo_and_ros2_control ros_namespace="${robot_ns}"/>
+    <xacro:add_lidar/>
+    <xacro:add_camera/>
+    <xacro:add_imu/>
     
 </robot>

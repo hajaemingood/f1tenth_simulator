@@ -26,6 +26,7 @@ def generate_launch_description():
             package='ferrari',
             executable='key_teleop',
             name='key_teleop',
+            namespace='ferrari_op',
             output='screen',
             parameters=[{
                 'device_name_regex': LaunchConfiguration('device_name_regex'),

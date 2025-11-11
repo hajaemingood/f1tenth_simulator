@@ -17,17 +17,45 @@ from launch_ros.actions import Node, PushRosNamespace
 def _robot_group(
     *,
     namespace: str,
-    description_launch: IncludeLaunchDescription,
-    spawn_arguments,
-    controllers_file: str,
+    launch_path: str,
+    extra_launch_args: dict,
+    spawn_pose_args: dict,
     use_sim_time,
 ):
     spawner_exec = "spawner.py" if os.environ.get("ROS_DISTRO", "") == "foxy" else "spawner"
 
+    description_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([launch_path]),
+        launch_arguments={
+            "use_sim_time": use_sim_time,
+            "ros_namespace": namespace,
+            **extra_launch_args,
+        }.items(),
+    )
+
     spawn_entity = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",
-        arguments=spawn_arguments,
+        arguments=[
+            "-topic",
+            "robot_description",
+            "-entity",
+            namespace,
+            "-robot_namespace",
+            namespace,
+            "-x",
+            spawn_pose_args["x"],
+            "-y",
+            spawn_pose_args["y"],
+            "-z",
+            spawn_pose_args["z"],
+            "-R",
+            spawn_pose_args["roll"],
+            "-P",
+            spawn_pose_args["pitch"],
+            "-Y",
+            spawn_pose_args["yaw"],
+        ],
         output="screen",
     )
 
@@ -40,8 +68,6 @@ def _robot_group(
             "joint_state_broadcaster",
             "--controller-manager",
             controller_manager_path,
-            "-p",
-            controllers_file,
         ],
         parameters=[{"use_sim_time": use_sim_time}],
         output="screen",
@@ -54,8 +80,6 @@ def _robot_group(
             "f1tenth_commands_controller",
             "--controller-manager",
             controller_manager_path,
-            "-p",
-            controllers_file,
         ],
         parameters=[{"use_sim_time": use_sim_time}],
         output="screen",
@@ -93,78 +117,33 @@ def generate_launch_description():
         launch_arguments={"world": world_path}.items(),
     )
 
-    ferrari_description = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [os.path.join(ferrari_pkg_path, "launch", "ferrari.launch.py")]
-        ),
-        launch_arguments={
-            "use_sim_time": use_sim_time,
-            "ros_namespace": "",
-        }.items(),
-    )
-
-    ferrari_op_description = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [os.path.join(ferrari_pkg_path, "launch", "ferrari_op.launch.py")]
-        ),
-        launch_arguments={
-            "use_sim_time": use_sim_time,
-            "ros_namespace": "",
-            "frame_suffix": "_op",
-        }.items(),
-    )
-
     ferrari_group = _robot_group(
         namespace="ferrari",
-        description_launch=ferrari_description,
-        spawn_arguments=[
-            "-topic",
-            "robot_description",
-            "-entity",
-            "ferrari",
-            "-robot_namespace",
-            "ferrari",
-            "-x",
-            LaunchConfiguration("ferrari_spawn_x"),
-            "-y",
-            LaunchConfiguration("ferrari_spawn_y"),
-            "-z",
-            LaunchConfiguration("ferrari_spawn_z"),
-            "-R",
-            LaunchConfiguration("ferrari_spawn_roll"),
-            "-P",
-            LaunchConfiguration("ferrari_spawn_pitch"),
-            "-Y",
-            LaunchConfiguration("ferrari_spawn_yaw"),
-        ],
-        controllers_file=os.path.join(ferrari_pkg_path, "config", "controllers.yaml"),
+        launch_path=os.path.join(ferrari_pkg_path, "launch", "ferrari.launch.py"),
+        extra_launch_args={},
+        spawn_pose_args={
+            "x": LaunchConfiguration("ferrari_spawn_x"),
+            "y": LaunchConfiguration("ferrari_spawn_y"),
+            "z": LaunchConfiguration("ferrari_spawn_z"),
+            "roll": LaunchConfiguration("ferrari_spawn_roll"),
+            "pitch": LaunchConfiguration("ferrari_spawn_pitch"),
+            "yaw": LaunchConfiguration("ferrari_spawn_yaw"),
+        },
         use_sim_time=use_sim_time,
     )
 
     ferrari_op_group = _robot_group(
         namespace="ferrari_op",
-        description_launch=ferrari_op_description,
-        spawn_arguments=[
-            "-topic",
-            "robot_description",
-            "-entity",
-            "ferrari_op",
-            "-robot_namespace",
-            "ferrari_op",
-            "-x",
-            LaunchConfiguration("ferrari_op_spawn_x"),
-            "-y",
-            LaunchConfiguration("ferrari_op_spawn_y"),
-            "-z",
-            LaunchConfiguration("ferrari_op_spawn_z"),
-            "-R",
-            LaunchConfiguration("ferrari_op_spawn_roll"),
-            "-P",
-            LaunchConfiguration("ferrari_op_spawn_pitch"),
-            "-Y",
-            LaunchConfiguration("ferrari_op_spawn_yaw"),
-        ],
-        controllers_file=os.path.join(ferrari_pkg_path, "config", "controllers_op.yaml"),
+        launch_path=os.path.join(ferrari_pkg_path, "launch", "ferrari_op.launch.py"),
+        extra_launch_args={"frame_suffix": "_op"},
+        spawn_pose_args={
+            "x": LaunchConfiguration("ferrari_op_spawn_x"),
+            "y": LaunchConfiguration("ferrari_op_spawn_y"),
+            "z": LaunchConfiguration("ferrari_op_spawn_z"),
+            "roll": LaunchConfiguration("ferrari_op_spawn_roll"),
+            "pitch": LaunchConfiguration("ferrari_op_spawn_pitch"),
+            "yaw": LaunchConfiguration("ferrari_op_spawn_yaw"),
+        },
         use_sim_time=use_sim_time,
     )
 

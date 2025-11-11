@@ -1,0 +1,281 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="ferrari_op" >
+
+    <xacro:arg name="frame_suffix" default="_op"/>
+    <xacro:arg name="ros_namespace" default=""/>
+    <xacro:property name="suffix" value="$(arg frame_suffix)"/>
+    <xacro:property name="robot_ns" value="$(arg ros_namespace)"/>
+
+    <xacro:include filename="macros.xacro"/>
+
+    <!-- Commonly reused link/joint names -->
+    <xacro:property name="base_link_name" value="${'base_link' + suffix}"/>
+    <xacro:property name="body_link_name" value="${'body' + suffix}"/>
+    <xacro:property name="fl_steer_link" value="${'front_left_steer_link' + suffix}"/>
+    <xacro:property name="fr_steer_link" value="${'front_right_steer_link' + suffix}"/>
+    <xacro:property name="rl_wheel_link" value="${'rear_left_wheel' + suffix}"/>
+    <xacro:property name="rr_wheel_link" value="${'rear_right_wheel' + suffix}"/>
+    <xacro:property name="fl_wheel_link" value="${'front_left_wheel' + suffix}"/>
+    <xacro:property name="fr_wheel_link" value="${'front_right_wheel' + suffix}"/>
+    <xacro:property name="caster_link" value="${'caster_wheel' + suffix}"/>
+    <xacro:property name="laser_frame_link" value="${'laser_frame' + suffix}"/>
+    <xacro:property name="camera_link_name" value="${'camera_link' + suffix}"/>
+    <xacro:property name="camera_optical_link_name" value="${'camera_link_optical' + suffix}"/>
+    <xacro:property name="imu_link_name" value="${'imu_link' + suffix}"/>
+    <xacro:property name="body_joint_name" value="${'body_joint' + suffix}"/>
+    <xacro:property name="fl_steer_joint" value="${'front_left_steer_joint' + suffix}"/>
+    <xacro:property name="fr_steer_joint" value="${'front_right_steer_joint' + suffix}"/>
+    <xacro:property name="fl_wheel_joint" value="${'front_left_wheel_joint' + suffix}"/>
+    <xacro:property name="fr_wheel_joint" value="${'front_right_wheel_joint' + suffix}"/>
+    <xacro:property name="rl_wheel_joint" value="${'rear_left_wheel_joint' + suffix}"/>
+    <xacro:property name="rr_wheel_joint" value="${'rear_right_wheel_joint' + suffix}"/>
+    <xacro:property name="caster_joint_name" value="${'caster_wheel_joint' + suffix}"/>
+    <xacro:property name="laser_joint_name" value="${'laser_joint' + suffix}"/>
+    <xacro:property name="camera_joint_name" value="${'camera_joint' + suffix}"/>
+    <xacro:property name="camera_optical_joint_name" value="${'camera_optical_joint' + suffix}"/>
+    <xacro:property name="imu_joint_name" value="${'imu_joint' + suffix}"/>
+
+    <!-- COLOR-->
+    <material name = "white">
+        <color rgba = "1 1 1 1"/>
+    </material>
+
+    <material name = "blue">
+        <color rgba = "0 0 1 1"/>
+    </material>
+
+    <material name="black">
+        <color rgba="0 0 0 1"/>
+    </material>
+
+    <material name="red">
+        <color rgba="1 0 0 1"/>
+    </material>
+
+    <!--BASE LINK-->
+    <link name = "${base_link_name}">
+    </link>
+
+    <!--BODY LINK-->
+    <joint name = "${body_joint_name}" type = "fixed">
+        <parent link = "${base_link_name}"/>
+        <child link = "${body_link_name}" />
+        <origin xyz = "-0.12 0 0"/>
+    </joint>
+
+    <link name = "${body_link_name}">
+        <visual>
+            <origin xyz = "0.1 0 0.03"/>
+            <geometry>
+                <box size = "0.2 0.1 0.06"/>
+            </geometry>
+            <material name = "yellow"/>
+        </visual>
+        <collision>
+            <origin xyz = "0.1 0 0.03"/>
+            <geometry>
+                <box size = "0.2 0.1 0.06"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="0.5" x="0.2" y="0.1" z="0.06">
+            <origin xyz="0.1 0 0.03" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <!-- 앞바퀴용 조향 링크 두 개 추가 -->
+    <link name="${fl_steer_link}">
+        <visual>
+            <geometry>
+                <box size="0.01 0.01 0.01"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.01 0.01 0.01"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="0.02" x="0.01" y="0.01" z="0.01">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <link name="${fr_steer_link}">
+        <visual>
+            <geometry>
+                <box size="0.01 0.01 0.01"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.01 0.01 0.01"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="0.02" x="0.01" y="0.01" z="0.01">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <!-- 앞바퀴 조향 조인트: yaw 축, ±20deg = ±0.349066rad -->
+    <joint name="${fl_steer_joint}" type="revolute">
+        <parent link="${base_link_name}"/>
+        <child  link="${fl_steer_link}"/>
+        <origin xyz="0.055 0.065 0" rpy="0 0 0"/>   <!-- 원래 앞바퀴 위치와 같게 -->
+        <axis xyz="0 0 1"/>
+        <limit lower="-0.349066" upper="0.349066" effort="30" velocity="2.0"/>
+    </joint>
+
+    <joint name="${fr_steer_joint}" type="revolute">
+        <parent link="${base_link_name}"/>
+        <child  link="${fr_steer_link}"/>
+        <origin xyz="0.055 -0.065 0" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-0.349066" upper="0.349066" effort="30" velocity="2.0"/>
+    </joint>
+
+    <!-- FRONT LEFT WHEEL -->
+    <xacro:wheel_link name="${fl_wheel_link}" parent_link="${fl_steer_link}"
+                  xyz="0 0 0" rpy="-${pi/2} 0 0" direction="1" joint_name="${fl_wheel_joint}"/>
+
+    <gazebo reference = "${fl_wheel_link}">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <!-- FRONT RIGHT WHEEL -->
+    <xacro:wheel_link name="${fr_wheel_link}" parent_link="${fr_steer_link}"
+                  xyz="0 0 0" rpy="${pi/2} 0 0" direction="-1" joint_name="${fr_wheel_joint}"/>
+    
+    <gazebo reference = "${fr_wheel_link}">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <!-- REAR LEFT WHEEL -->
+    <xacro:wheel_link name="${rl_wheel_link}" parent_link="${base_link_name}"
+                  xyz="-0.1 0.065 0" rpy="-${pi/2} 0 0" direction="1" joint_name="${rl_wheel_joint}"/>
+
+    <gazebo reference = "${rl_wheel_link}">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <!-- REAR RIGHT WHEEL -->
+    <xacro:wheel_link name="${rr_wheel_link}" parent_link="${base_link_name}"
+                  xyz="-0.1 -0.065 0" rpy="${pi/2} 0 0" direction="-1" joint_name="${rr_wheel_joint}"/>
+
+    <gazebo reference = "${rr_wheel_link}">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <!-- CASTER WHEEL LINK -->
+    <joint name="${caster_joint_name}" type="fixed">
+        <parent link="${body_link_name}"/>
+        <child link="${caster_link}"/>
+        <origin xyz="0.03 0 0"/>
+    </joint>
+
+    <link name="${caster_link}">
+        <visual>
+            <geometry>
+                <sphere radius = "0.03"/>
+            </geometry>
+            <material name = "black"/>
+        </visual>
+        <collision>
+            <geometry>
+                <sphere radius = "0.03"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_sphere mass="0.1" radius="0.03">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </xacro:inertial_sphere>
+    </link>
+
+    <gazebo reference = "${caster_link}">
+        <material>Gazebo/Blue</material>
+
+        <mu1 value="0.001"/>
+        <mu2 value="0.001"/>
+    </gazebo>
+
+    <!--LiDAR-->
+    <joint name = "${laser_joint_name}" type = "fixed">
+        <parent link = "${base_link_name}"/>
+        <child link = "${laser_frame_link}"/>
+        <origin xyz = "0 0 0.075" rpy="0 0 0"/>
+    </joint>
+
+    <link name="${laser_frame_link}">
+        <visual>
+            <geometry>
+                <cylinder radius="0.03" length="0.03"/>
+            </geometry>
+            <material name = "red"/>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder radius="0.03" length="0.03"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- CAMERA -->
+    <joint name = "${camera_joint_name}" type = "fixed">
+        <parent link = "${body_link_name}"/>
+        <child link = "${camera_link_name}"/>
+        <origin xyz = "0.20 0 0.03" rpy="0 0 0"/>
+    </joint>
+
+    <link name = "${camera_link_name}">
+        <visual>
+            <geometry>
+                <box size = "0.01 0.03 0.03"/>
+            </geometry>
+            <material name = "red"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size = "0.01 0.03 0.03"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name = "${camera_optical_joint_name}" type = "fixed">
+        <parent link = "${camera_link_name}"/>
+        <child link = "${camera_optical_link_name}"/>
+        <origin xyz = "0 0 0" rpy = "${-pi/2} 0 ${pi/2}"/>
+    </joint>
+
+    <link name = "${camera_optical_link_name}">
+    </link>
+
+    <!-- IMU -->
+    <joint name = "${imu_joint_name}" type = "fixed">
+        <parent link = "${body_link_name}"/>
+        <child link = "${imu_link_name}"/>
+        <origin xyz = "0.03 0 0.065" rpy = "0 0 0"/>
+    </joint>
+
+    <link name = "${imu_link_name}">
+        <visual>
+            <geometry>
+                <box size = "0.03 0.03 0.01"/>
+            </geometry>
+            <material name = "blue"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size = "0.03 0.01 0.03"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!--GAZEBO AND SENSORS-->
+    <xacro:include filename="ackermann.xacro"/>
+    <xacro:include filename="lidar.xacro"/>
+    <xacro:include filename="camera.xacro"/>
+    <xacro:include filename="imu.xacro"/>
+    
+    <xacro:add_gazebo_and_ros2_control joint_suffix="${suffix}" controllers_file="$(find ferrari)/config/controllers_op.yaml" ros_namespace="${robot_ns}" hardware_name="ferrari_op_hw"/>
+    <xacro:add_lidar frame_suffix="${suffix}"/>
+    <xacro:add_camera frame_suffix="${suffix}"/>
+    <xacro:add_imu frame_suffix="${suffix}"/>
+    
+</robot>
