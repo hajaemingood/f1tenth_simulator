@@ -20,7 +20,7 @@ class BaseLinkPosePublisher(Node):
         try:
             transform = self.tf_buffer.lookup_transform(
                 "map",
-                "base_link",
+                "base_link_op",
                 Time(),
                 timeout=Duration(seconds=0.1),
             )

@@ -8,7 +8,7 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description() -> LaunchDescription:
-    ferrari_share = get_package_share_directory("ferrari_op")
+    ferrari_share = get_package_share_directory("ferrari")
 
     use_sim_time = LaunchConfiguration("use_sim_time")
     map_yaml = LaunchConfiguration("map")
@@ -20,19 +20,19 @@ def generate_launch_description() -> LaunchDescription:
     initial_pose_yaw = LaunchConfiguration("initial_pose_yaw")
 
     declare_use_sim_time = DeclareLaunchArgument("use_sim_time", default_value="true")
-    default_map_yaml = os.path.join(ferrari_share, "maps", "shortcut.yaml")
+    default_map_yaml = os.path.join(ferrari_share, "maps", "iccas_track.yaml")
 
     declare_map = DeclareLaunchArgument(
         "map",
         default_value=default_map_yaml,
         description="AMCL과 map_server에서 사용할 지도 yaml 파일",
     )
-    declare_base_frame = DeclareLaunchArgument("base_frame", default_value="base_link")
-    declare_odom_frame = DeclareLaunchArgument("odom_frame", default_value="odom")
-    declare_scan_topic = DeclareLaunchArgument("scan_topic", default_value="scan")
-    declare_initial_pose_x = DeclareLaunchArgument("initial_pose_x", default_value="0.0")
-    declare_initial_pose_y = DeclareLaunchArgument("initial_pose_y", default_value="0.0")
-    declare_initial_pose_yaw = DeclareLaunchArgument("initial_pose_yaw", default_value="0.0")
+    declare_base_frame = DeclareLaunchArgument("base_frame", default_value="base_link_op")
+    declare_odom_frame = DeclareLaunchArgument("odom_frame", default_value="odom_op")
+    declare_scan_topic = DeclareLaunchArgument("scan_topic", default_value="/ferrari_op/scan")
+    declare_initial_pose_x = DeclareLaunchArgument("initial_pose_x", default_value="-0.623")
+    declare_initial_pose_y = DeclareLaunchArgument("initial_pose_y", default_value="-0.058")
+    declare_initial_pose_yaw = DeclareLaunchArgument("initial_pose_yaw", default_value="1.565")
 
     map_server_node = Node(
         package="nav2_map_server",
@@ -63,7 +63,7 @@ def generate_launch_description() -> LaunchDescription:
             {"alpha3": 0.2},
             {"alpha4": 0.2},
             # Keep legacy PoseArray particle cloud so RViz PoseArray display works.
-            {"use_particle_cloud_message_type": False},
+            {"use_particle_cloud_message_type": True},
             {"initial_pose": {
                 "x": initial_pose_x,
                 "y": initial_pose_y,

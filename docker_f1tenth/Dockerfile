@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-foxy-ros2-control ros-foxy-ros2-controllers ros-foxy-hardware-interface ros-foxy-pluginlib \
     ros-foxy-gazebo-ros-pkgs ros-foxy-gazebo-ros2-control \
     ros-foxy-joint-state-publisher ros-foxy-joint-state-publisher-gui ros-foxy-robot-state-publisher \
-    ros-foxy-teleop-twist-keyboard \
+    ros-foxy-teleop-twist-keyboard ros-foxy-rqt-tf-tree ros-foxy-nav2-rviz-plugins \
     ros-foxy-diagnostic-updater \
     ros-foxy-geographic-msgs \
     ros-foxy-nav2-amcl \

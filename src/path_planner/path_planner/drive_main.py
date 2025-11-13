@@ -18,9 +18,9 @@ from math import *
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Pose2D
 from std_msgs.msg import Float64
-from obstacle.follow_the_gap import Follow_the_gap
-from path_tracking.pure_pursuit import Pure_pursuit
-from path_tracking.PID_control import PIDController
+from follow_the_gap import Follow_the_gap
+from pure_pursuit import Pure_pursuit
+from PID_control import PIDController
 import numpy as np
 
 class Controller:

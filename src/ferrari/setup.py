@@ -27,6 +27,7 @@ setup(
     entry_points={
         'console_scripts': [
             'key_teleop = ferrari.key_teleop:main',
+            'key_teleop_single = ferrari.key_teleop_signel:main',
         ],
     },
 )

@@ -18,7 +18,7 @@ ekf_se_odom:
     odom0_differential: false
     odom0_relative:     false
 
-    imu0: //ferrari/imu/data
+    imu0: /ferrari/imu/data
     imu0_config: [false, false, false,
                   false, false, true,
                   false, false, false,

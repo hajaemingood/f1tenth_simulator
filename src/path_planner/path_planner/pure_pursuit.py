@@ -18,7 +18,7 @@ class PurePursuitNode(Node):
             "waypoints_csv",
             "/root/f1_sim/src/path_planner/path_planner/waypoints.csv",
         )
-        self.declare_parameter("lookahead_distance", 0.8)
+        self.declare_parameter("lookahead_distance", 1.2)
 
         self.waypoints_path = self.get_parameter("waypoints_csv").get_parameter_value().string_value
         self.lookahead_distance = (
@@ -27,8 +27,8 @@ class PurePursuitNode(Node):
 
         self.waypoints = self._load_waypoints(self.waypoints_path)
 
-        self.motor_pub = self.create_publisher(Float64, "commands/motor/speed", 10)
-        self.servo_pub = self.create_publisher(Float64, "commands/servo/position", 10)
+        self.motor_pub = self.create_publisher(Float64, "/ferrari_op/commands/motor/speed", 10)
+        self.servo_pub = self.create_publisher(Float64, "/ferrari_op/commands/servo/position", 10)
 
         self.create_subscription(Pose2D, "/base_link_pose", self._base_callback, 10)
 

@@ -9,7 +9,7 @@ wheel_odom:
     publish_tf: false
     body_forward_sign: 1.0
     use_imu_heading: true
-    imu_topic: /ferrari/imu/data
-    erpm_per_radps: 300.0
+    imu_topic: /ferraru/imu/data
+    erpm_per_radps: 500.0
     servo_center: 0.5
-    max_steer_rad: 0.5
+    max_steer_rad: 0.349066

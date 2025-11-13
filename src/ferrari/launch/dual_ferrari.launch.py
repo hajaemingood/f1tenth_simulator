@@ -108,7 +108,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
     rviz_enable = LaunchConfiguration("rviz")
 
-    world_path = os.path.join(ferrari_pkg_path, "config", "with_robot.world")
+    world_path = os.path.join(ferrari_pkg_path, "config", "iccas_track.world")
     gazebo_pkg_path = get_package_share_directory("gazebo_ros")
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -163,19 +163,19 @@ def generate_launch_description():
     return LaunchDescription(
         [
             DeclareLaunchArgument("use_sim_time", default_value="true"),
-            DeclareLaunchArgument("rviz", default_value="false"),
-            DeclareLaunchArgument("ferrari_spawn_x", default_value="0.0"),
-            DeclareLaunchArgument("ferrari_spawn_y", default_value="0.5"),
+            DeclareLaunchArgument("rviz", default_value="true"),
+            DeclareLaunchArgument("ferrari_spawn_x", default_value="-5.195865"),
+            DeclareLaunchArgument("ferrari_spawn_y", default_value="0.883153"),
             DeclareLaunchArgument("ferrari_spawn_z", default_value="0.05"),
             DeclareLaunchArgument("ferrari_spawn_roll", default_value="0.0"),
-            DeclareLaunchArgument("ferrari_spawn_pitch", default_value="0.0"),
-            DeclareLaunchArgument("ferrari_spawn_yaw", default_value="0.0"),
-            DeclareLaunchArgument("ferrari_op_spawn_x", default_value="1.0"),
-            DeclareLaunchArgument("ferrari_op_spawn_y", default_value="-0.5"),
+            DeclareLaunchArgument("ferrari_spawn_pitch", default_value="0.000003"),
+            DeclareLaunchArgument("ferrari_spawn_yaw", default_value="-1.600342"),
+            DeclareLaunchArgument("ferrari_op_spawn_x", default_value="-1.038894"),
+            DeclareLaunchArgument("ferrari_op_spawn_y", default_value="1.353274"),
             DeclareLaunchArgument("ferrari_op_spawn_z", default_value="0.05"),
             DeclareLaunchArgument("ferrari_op_spawn_roll", default_value="0.0"),
-            DeclareLaunchArgument("ferrari_op_spawn_pitch", default_value="0.0"),
-            DeclareLaunchArgument("ferrari_op_spawn_yaw", default_value="0.0"),
+            DeclareLaunchArgument("ferrari_op_spawn_pitch", default_value="0.000003"),
+            DeclareLaunchArgument("ferrari_op_spawn_yaw", default_value="1.541203"),
             gazebo,
             ferrari_group,
             ferrari_op_group,

@@ -16,8 +16,8 @@ def generate_launch_description():
         Node(
             package='robot_localization',
             executable='ekf_node',
-            name='ekf_se_odom',
+            name='ekf_se_odom_op',
             output='screen',
-            parameters=[os.path.join(pkg, 'config', 'ekf_wheel_imu.yaml')],
+            parameters=[os.path.join(pkg, 'config', 'ekf_wheel_imu_op.yaml')],
         ),
     ])

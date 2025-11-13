@@ -10,9 +10,9 @@ import pandas as pd
 from pathlib import Path
 
 # ================= 사용자 설정 =================
-YAML_PATH = "/root/f1_sim/src/ferrari/maps/shortcut.yaml"     # 예: "columbia.yaml"
-PGM_PATH = "/root/f1_sim/src/ferrari/maps/shortcut.pgm"       # 예: "columbia.pgm"
-OUTPUT_PREFIX = "/root/f1_sim/src/path_planner/path_planner/waypoints"      # 저장 prefix
+YAML_PATH = "/root/f1tenth_simulator/src/ferrari/maps/iccas_track.yaml"     # 예: "columbia.yaml"
+PGM_PATH = "/root/f1tenth_simulator/src/ferrari/maps/iccas_track.pgm"       # 예: "columbia.pgm"
+OUTPUT_PREFIX = "/root/f1tenth_simulator/src/path_planner/path_planner/waypoints"      # 저장 prefix
 
 # 에디팅/리샘플/스무딩
 TARGET_SPACING_M = 0.20    # 균일 간격 (Pure Pursuit 0.1~0.3 권장)

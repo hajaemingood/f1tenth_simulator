@@ -99,12 +99,12 @@ def generate_launch_description():
 
             # ▶ 스폰 포즈 기본값: 네가 보내준 값
             DeclareLaunchArgument("entity",      default_value="with_robot"),
-            DeclareLaunchArgument("spawn_x",     default_value="-1.005167"),
-            DeclareLaunchArgument("spawn_y",     default_value="-4.175517"),
-            DeclareLaunchArgument("spawn_z",     default_value="0.03"),
-            DeclareLaunchArgument("spawn_roll",  default_value="0.000001"),
-            DeclareLaunchArgument("spawn_pitch", default_value="-0.000001"),
-            DeclareLaunchArgument("spawn_yaw",   default_value="1.489076"),
+            DeclareLaunchArgument("spawn_x",     default_value="-0.408797"),
+            DeclareLaunchArgument("spawn_y",     default_value="1.454447"),
+            DeclareLaunchArgument("spawn_z",     default_value="0.05"),
+            DeclareLaunchArgument("spawn_roll",  default_value="0.00"),
+            DeclareLaunchArgument("spawn_pitch", default_value="0.000003"),
+            DeclareLaunchArgument("spawn_yaw",   default_value="1.579505"),
 
             rsp,
             gazebo,

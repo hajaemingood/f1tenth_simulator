@@ -49,7 +49,7 @@ class WheelOdomNode(Node):
 
         # IMU
         self.declare_parameter('use_imu_heading', True)
-        self.declare_parameter('imu_topic', '/ferrari/imu/data')
+        self.declare_parameter('imu_topic', '/imu/data')
 
         # 모터/서보 스케일
         self.declare_parameter('erpm_per_radps', 300.0)          # 예: 300 ERPM = 1 rad/s
@@ -90,10 +90,10 @@ class WheelOdomNode(Node):
 
         # 실차 입력
         self.sub_motor = self.create_subscription(
-            Float64, 'commands/motor/speed', self.cb_motor, 20
+            Float64, '/ferrari/commands/motor/speed', self.cb_motor, 20
         )
         self.sub_servo = self.create_subscription(
-            Float64, 'commands/servo/position', self.cb_servo, 20
+            Float64, '/ferrari/commands/servo/position', self.cb_servo, 20
         )
 
         if self.use_imu_heading:

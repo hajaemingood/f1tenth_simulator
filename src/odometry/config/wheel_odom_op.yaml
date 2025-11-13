@@ -1,15 +1,15 @@
-wheel_odom:
+wheel_odom_op:
   ros__parameters:
     use_sim_time: true
     wheelbase: 1.55
     wheel_radius: 0.05
-    odom_frame: odom
+    odom_frame: odom_op
     base_frame: base_link_op
     odom_topic: /wheel_odom_op
     publish_tf: false
     body_forward_sign: 1.0
     use_imu_heading: true
     imu_topic: /ferrari_op/imu/data
-    erpm_per_radps: 300.0
+    erpm_per_radps: 500.0
     servo_center: 0.5
-    max_steer_rad: 0.5
+    max_steer_rad: 0.349066

@@ -30,10 +30,10 @@ f1tenth_commands_controller:
     right_wheel_joint: "rear_right_wheel_joint"
 
     servo_center: 0.5
-    steer_max_left_rad:  -0.5236
-    steer_max_right_rad: -0.5236
+    steer_max_left_rad:  -0.349066
+    steer_max_right_rad: 0.349066
     servo_axis_inverted: false
-    erpm_per_radps: 300.0
+    erpm_per_radps: 500.0
 
 /ferrari_op/f1tenth_commands_controller:
   ros__parameters:
@@ -43,7 +43,7 @@ f1tenth_commands_controller:
     right_wheel_joint: "rear_right_wheel_joint"
 
     servo_center: 0.5
-    steer_max_left_rad:  -0.5236
-    steer_max_right_rad: -0.5236
+    steer_max_left_rad:  -0.349066
+    steer_max_right_rad: -0.349066
     servo_axis_inverted: false
-    erpm_per_radps: 300.0
+    erpm_per_radps: 500.0

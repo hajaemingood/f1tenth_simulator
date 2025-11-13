@@ -1,4 +1,4 @@
-ekf_se_odom:
+ekf_se_odom_op:
   ros__parameters:
     use_sim_time: true
     frequency: 50.0
@@ -7,7 +7,7 @@ ekf_se_odom:
 
     map_frame: map
     odom_frame: odom_op
-    base_link_frame: base_link
+    base_link_frame: base_link_op
     world_frame: odom_op
 
     odom0: /wheel_odom_op

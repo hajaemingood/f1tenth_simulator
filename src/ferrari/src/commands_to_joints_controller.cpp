@@ -127,7 +127,7 @@ private:
   double steer_left_max_{0.349066};
   double steer_right_max_{0.349066};
   bool   servo_invert_{false};
-  double erpm_per_radps_{300.0};
+  double erpm_per_radps_{500.0};
 
   // 입력 버퍼
   double servo_in_{0.5};
