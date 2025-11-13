@@ -27,6 +27,7 @@ setup(
         'console_scripts': [
             'waypoints = path_planner.waypoints:main',
             'base_link_pub = path_planner.base_link_pub:main',
+            'base_link_op_pub = path_planner.base_link_op_pub:main',
             'pure_pursuit = path_planner.pure_pursuit:main',
             'waypoint_visualization = path_planner.waypoint_visualization:main',
         ],

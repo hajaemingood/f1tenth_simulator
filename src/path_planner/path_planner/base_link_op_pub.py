@@ -10,17 +10,17 @@ from tf_transformations import euler_from_quaternion
 
 class BaseLinkPosePublisher(Node):
     def __init__(self) -> None:
-        super().__init__("base_link_pose_publisher")
+        super().__init__("base_link_op_pose_publisher")
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
-        self.publisher = self.create_publisher(Pose2D, "/base_link_pose", 10)
+        self.publisher = self.create_publisher(Pose2D, "/base_link_op_pose", 10)
         self.timer = self.create_timer(0.05, self._publish_pose)
 
     def _publish_pose(self) -> None:
         try:
             transform = self.tf_buffer.lookup_transform(
                 "map",
-                "base_link",
+                "base_link_op",
                 Time(),
                 timeout=Duration(seconds=0.1),
             )

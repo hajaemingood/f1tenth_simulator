@@ -10,13 +10,12 @@ def generate_launch_description() -> LaunchDescription:
     share_dir = get_package_share_directory("path_planner")
     waypoints_csv = os.path.join(share_dir, "data", "waypoints.csv")
 
-    base_link_pub_node = Node(
+    base_link_op_pub_node = Node(
         package="path_planner",
-        executable="base_link_pub",
-        name="base_link_pub",
+        executable="base_link_op_pub",
+        name="base_link_op_pub",
         output="screen",
     )
-
     waypoint_viz_node = Node(
         package="path_planner",
         executable="waypoint_visualization",
@@ -34,8 +33,8 @@ def generate_launch_description() -> LaunchDescription:
     )
 
     return LaunchDescription(
-        [
-            TimerAction(period=2.0, actions=[base_link_pub_node]),
+        [   
+            TimerAction(period=2.0, actions=[base_link_op_pub_node]),
             TimerAction(period=4.0, actions=[waypoint_viz_node]),
             pure_pursuit_node,
         ]

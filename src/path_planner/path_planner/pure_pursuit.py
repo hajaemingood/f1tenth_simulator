@@ -16,7 +16,7 @@ class PurePursuitNode(Node):
 
         self.declare_parameter(
             "waypoints_csv",
-            "/root/f1_sim/src/path_planner/path_planner/waypoints.csv",
+            "/root/f1tenth_simulator/src/path_planner/path_planner/waypoints.csv",
         )
         self.declare_parameter("lookahead_distance", 1.2)
 
@@ -30,7 +30,7 @@ class PurePursuitNode(Node):
         self.motor_pub = self.create_publisher(Float64, "/ferrari_op/commands/motor/speed", 10)
         self.servo_pub = self.create_publisher(Float64, "/ferrari_op/commands/servo/position", 10)
 
-        self.create_subscription(Pose2D, "/base_link_pose", self._base_callback, 10)
+        self.create_subscription(Pose2D, "/base_link_op_pose", self._base_callback, 10)
 
         self.speed_msg = Float64()
         self.steer_msg = Float64()
@@ -87,11 +87,11 @@ class PurePursuitNode(Node):
             self.get_logger().warn("Steering angle too close to zero; skipping velocity calculation.")
 
         if steering_angle > 0.65 or steering_angle < 0.35:
-            velocity = 5000.0
-        elif steering_angle > 0.875 or steering_angle < 0.175:
-            velocity = 3000.0
-        else:
             velocity = 7000.0
+        elif steering_angle > 0.875 or steering_angle < 0.175:
+            velocity = 5000.0
+        else:
+            velocity = 10000.0
 
         self.speed_msg.data = float(velocity)
         self.steer_msg.data = steering_angle

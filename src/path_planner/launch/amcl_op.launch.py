@@ -27,13 +27,12 @@ def generate_launch_description() -> LaunchDescription:
         default_value=default_map_yaml,
         description="AMCL과 map_server에서 사용할 지도 yaml 파일",
     )
-    declare_base_frame = DeclareLaunchArgument("base_frame", default_value="base_link")
-    declare_odom_frame = DeclareLaunchArgument("odom_frame", default_value="odom")
-    declare_scan_topic = DeclareLaunchArgument("scan_topic", default_value="/ferrari/scan")
-    declare_initial_pose_x = DeclareLaunchArgument("initial_pose_x", default_value="-4.771")
-    declare_initial_pose_y = DeclareLaunchArgument("initial_pose_y", default_value="-0.639")
-    declare_initial_pose_yaw = DeclareLaunchArgument("initial_pose_yaw", default_value="-1.584")
-
+    declare_base_frame = DeclareLaunchArgument("base_frame", default_value="base_link_op")
+    declare_odom_frame = DeclareLaunchArgument("odom_frame", default_value="odom_op")
+    declare_scan_topic = DeclareLaunchArgument("scan_topic", default_value="/ferrari_op/scan")
+    declare_initial_pose_x = DeclareLaunchArgument("initial_pose_x", default_value="-0.623")
+    declare_initial_pose_y = DeclareLaunchArgument("initial_pose_y", default_value="-0.058")
+    declare_initial_pose_yaw = DeclareLaunchArgument("initial_pose_yaw", default_value="1.565")
 
     map_server_node = Node(
         package="nav2_map_server",
@@ -90,12 +89,13 @@ def generate_launch_description() -> LaunchDescription:
         ],
     )
 
-    base_link_pub_node = Node(
+    base_link_op_pub_node = Node(
         package="path_planner",
-        executable="base_link_pub",
-        name="base_link_pub",
+        executable="base_link_op_pub",
+        name="base_link_op_pub",
         output="screen",
     )
+
 
     return LaunchDescription(
         [
@@ -110,6 +110,6 @@ def generate_launch_description() -> LaunchDescription:
             map_server_node,
             amcl_node,
             lifecycle_manager_node,
-            base_link_pub_node,
+            base_link_op_pub_node,
         ]
     )
