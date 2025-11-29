@@ -11,6 +11,7 @@
     <!-- Commonly reused link/joint names -->
     <xacro:property name="base_link_name" value="${'base_link' + suffix}"/>
     <xacro:property name="body_link_name" value="${'body' + suffix}"/>
+    <xacro:property name="bar_link_name" value="${'bar' + suffix}"/>
     <xacro:property name="fl_steer_link" value="${'front_left_steer_link' + suffix}"/>
     <xacro:property name="fr_steer_link" value="${'front_right_steer_link' + suffix}"/>
     <xacro:property name="rl_wheel_link" value="${'rear_left_wheel' + suffix}"/>
@@ -23,6 +24,7 @@
     <xacro:property name="camera_optical_link_name" value="${'camera_link_optical' + suffix}"/>
     <xacro:property name="imu_link_name" value="${'imu_link' + suffix}"/>
     <xacro:property name="body_joint_name" value="${'body_joint' + suffix}"/>
+    <xacro:property name="bar_joint_name" value="${'bar_joint' + suffix}"/>
     <!-- Actuated joint names는 두 차량이 동일(ros2_control 연동 용) -->
     <xacro:property name="fl_steer_joint" value="front_left_steer_joint"/>
     <xacro:property name="fr_steer_joint" value="front_right_steer_joint"/>
@@ -80,6 +82,32 @@
         </collision>
         <xacro:inertial_box mass="0.5" x="0.2" y="0.1" z="0.06">
             <origin xyz="0.1 0 0.03" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <!--BAR LINK-->
+    <joint name = "${bar_joint_name}" type = "fixed">
+        <parent link = "${body_link_name}"/>
+        <child link = "${bar_link_name}" />
+        <origin xyz = "0 0 0.06"/>
+    </joint>
+
+    <link name = "${bar_link_name}">
+        <visual>
+            <origin xyz = "0 0 0.06"/>
+            <geometry>
+                <box size = "0.05 0.1 0.2"/>
+            </geometry>
+            <material name = "white"/>
+        </visual>
+        <collision>
+            <origin xyz = "0 0 0.06"/>
+            <geometry>
+                <box size = "0.05 0.1 0.2"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="0.5" x="0.5" y="0.1" z="0.2">
+            <origin xyz="0.0 0 0.06" rpy="0 0 0"/>
         </xacro:inertial_box>
     </link>
 

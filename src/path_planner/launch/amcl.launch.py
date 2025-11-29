@@ -29,7 +29,7 @@ def generate_launch_description() -> LaunchDescription:
     )
     declare_base_frame = DeclareLaunchArgument("base_frame", default_value="base_link")
     declare_odom_frame = DeclareLaunchArgument("odom_frame", default_value="odom")
-    declare_scan_topic = DeclareLaunchArgument("scan_topic", default_value="/ferrari/scan")
+    declare_scan_topic = DeclareLaunchArgument("scan_topic", default_value="/scan")
     declare_initial_pose_x = DeclareLaunchArgument("initial_pose_x", default_value="-4.771")
     declare_initial_pose_y = DeclareLaunchArgument("initial_pose_y", default_value="-0.639")
     declare_initial_pose_yaw = DeclareLaunchArgument("initial_pose_yaw", default_value="-1.584")

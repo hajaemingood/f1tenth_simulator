@@ -10,13 +10,13 @@ slam_toolbox:
     # ROS Parameters
     odom_frame: odom
     map_frame: map
-    base_frame: base_footprint
+    base_frame: base_link
     scan_topic: /scan
-    mode: mapping #localization
+    mode: localization #mapping 
 
     # if you'd like to start localizing on bringup in a map and pose
-    #map_file_name: test_steve
-    #map_start_pose: [5.0, 1.0, 0.0]
+    map_file_name: /root/f1tenth_simulator/src/path_planner/config/iccas_pose
+    # map_start_pose: [5.0, 1.0, 0.0]
 
     debug_logging: false
     throttle_scans: 1

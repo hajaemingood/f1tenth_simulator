@@ -32,10 +32,10 @@ def _amcl_node(
             {"scan_topic": scan_topic},
             {"tf_broadcast": True},
             {"set_initial_pose": True},
-            {"alpha1": 0.2},
-            {"alpha2": 0.2},
-            {"alpha3": 0.2},
-            {"alpha4": 0.2},
+            {"alpha1": 0.05},
+            {"alpha2": 0.02},
+            {"alpha3": 0.02},
+            {"alpha4": 0.05},
             {"use_particle_cloud_message_type": True},
             {
                 "initial_pose": {
