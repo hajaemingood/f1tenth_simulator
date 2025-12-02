@@ -59,10 +59,10 @@ def generate_launch_description() -> LaunchDescription:
             {"scan_topic": scan_topic},
             {"tf_broadcast": True},
             {"set_initial_pose": True},
-            {"alpha1": 0.2},
-            {"alpha2": 0.2},
-            {"alpha3": 0.2},
-            {"alpha4": 0.2},
+            {"alpha1": 0.1},
+            {"alpha2": 0.1},
+            {"alpha3": 0.1},
+            {"alpha4": 0.1},
             # Keep legacy PoseArray particle cloud so RViz PoseArray display works.
             {"use_particle_cloud_message_type": True},
             {"initial_pose": {

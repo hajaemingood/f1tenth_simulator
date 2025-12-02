@@ -17,7 +17,7 @@ def generate_launch_description():
         DeclareLaunchArgument('grab', default_value='false'),
         # 퍼블리시 주기/스케일
         DeclareLaunchArgument('publish_rate_hz', default_value='50.0'),
-        DeclareLaunchArgument('max_erpm', default_value='10000.0'),
+        DeclareLaunchArgument('max_erpm', default_value='5000.0'),
         DeclareLaunchArgument('steer_left', default_value='0.0'),
         DeclareLaunchArgument('steer_center', default_value='0.5'),
         DeclareLaunchArgument('steer_right', default_value='1.0'),
