@@ -9,7 +9,10 @@ LaserScan(/scan) 메시지를 읽어 각 프레임마다
   2. 해당 거리 값
   3. base_link 기준 좌표(local_x, local_y)
   4. map 기준 좌표(global_x, global_y)
-  5. 상대 차량(bar_op) 감지 여부(isOpponent)
+  5. 상대 차량(base_link_op) 감지 여부(isOpponent)
+  6. 벽 감지 여부(isWall)
+  7. 정적 장애물 감지 여부(isStatic)
+  8. 자유 공간 여부(isFree)
 를 CSV로 저장한다.
 """
 
@@ -28,9 +31,14 @@ from sensor_msgs.msg import LaserScan
 from tf2_msgs.msg import TFMessage
 
 
-DEFAULT_BAG_PATH = "/root/f1tenth_simulator/src/machine_learning/bagfiles/data_5"
-DEFAULT_OUTPUT = "/root/f1tenth_simulator/src/machine_learning/config/output_5.csv"
-DEFAULT_OPPONENT_CSV = "/root/f1tenth_simulator/src/machine_learning/config/ferrari_op_path_5.csv"
+DEFAULT_BAG_PATH = "/root/f1tenth_simulator/src/machine_learning/bagfiles/data_7"
+DEFAULT_OUTPUT = "/root/f1tenth_simulator/src/machine_learning/config/output_7.csv"
+DEFAULT_OPPONENT_CSV = "/root/f1tenth_simulator/src/machine_learning/config/ferrari_op_path_7.csv"
+DEFAULT_WALL_MAP = "/root/f1tenth_simulator/src/machine_learning/config/map_coord.csv"
+DEFAULT_STATIC_MAP = "/root/f1tenth_simulator/src/machine_learning/config/isStatic_coord.csv"
+DEFAULT_WORLD_TO_MAP_YAW = 0.016341999999999857
+DEFAULT_WORLD_TO_MAP_TX = 0.43860305302501423
+DEFAULT_WORLD_TO_MAP_TY = -1.4371280282927352
 
 
 @dataclass(frozen=True)
@@ -42,6 +50,85 @@ class BoundingBox:
 
     def contains_local(self, x: float, y: float) -> bool:
         return (-self.rear <= x <= self.front) and (-self.right <= y <= self.left)
+
+
+class WallIndex:
+    __slots__ = ("tolerance", "bucket_size", "buckets")
+
+    def __init__(self, tolerance: float, bucket_size: float):
+        self.tolerance = tolerance
+        self.bucket_size = max(bucket_size, tolerance)
+        self.buckets: Dict[Tuple[int, int], List[Tuple[float, float]]] = {}
+
+    def _bucket_key(self, x: float, y: float) -> Tuple[int, int]:
+        return (
+            math.floor(x / self.bucket_size),
+            math.floor(y / self.bucket_size),
+        )
+
+    def add_point(self, x: float, y: float):
+        key = self._bucket_key(x, y)
+        self.buckets.setdefault(key, []).append((x, y))
+
+    def is_wall(self, x: float, y: float) -> Tuple[bool, float]:
+        key_x, key_y = self._bucket_key(x, y)
+        tol = self.tolerance
+        best = float("inf")
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                bucket = self.buckets.get((key_x + dx, key_y + dy))
+                if not bucket:
+                    continue
+                for wx, wy in bucket:
+                    if abs(wx - x) <= tol and abs(wy - y) <= tol:
+                        dist = math.hypot(wx - x, wy - y)
+                        best = min(best, dist)
+        return (best != float("inf"), best)
+
+
+class StaticObstacleIndex:
+    __slots__ = ("half_length", "half_width", "tolerance", "bucket_size", "buckets")
+
+    def __init__(self, half_length: float, half_width: float, tolerance: float):
+        self.half_length = half_length
+        self.half_width = half_width
+        self.tolerance = tolerance
+        self.bucket_size = 2.0 * max(half_length, half_width) + 2.0 * tolerance
+        self.buckets: Dict[Tuple[int, int], List[Tuple[float, float, float]]] = {}
+
+    def _bucket_key(self, x: float, y: float) -> Tuple[int, int]:
+        return (
+            math.floor(x / self.bucket_size),
+            math.floor(y / self.bucket_size),
+        )
+
+    def add_obstacle(self, x: float, y: float, yaw: float):
+        key = self._bucket_key(x, y)
+        self.buckets.setdefault(key, []).append((x, y, yaw))
+
+    def contains(self, x: float, y: float) -> Tuple[bool, float]:
+        key_x, key_y = self._bucket_key(x, y)
+        tol = self.tolerance
+        best = float("inf")
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                bucket = self.buckets.get((key_x + dx, key_y + dy))
+                if not bucket:
+                    continue
+                for ox, oy, oyaw in bucket:
+                    rel_x = x - ox
+                    rel_y = y - oy
+                    cos_yaw = math.cos(oyaw)
+                    sin_yaw = math.sin(oyaw)
+                    local_x = cos_yaw * rel_x + sin_yaw * rel_y
+                    local_y = -sin_yaw * rel_x + cos_yaw * rel_y
+                    if (
+                        -self.half_length - tol <= local_x <= self.half_length + tol
+                        and -self.half_width - tol <= local_y <= self.half_width + tol
+                    ):
+                        dist = math.hypot(rel_x, rel_y)
+                        best = min(best, dist)
+        return (best != float("inf"), best)
 
 
 # ferrari_op.xacro 기준 차체 전체를 덮는 기본 박스.
@@ -118,6 +205,46 @@ def parse_args():
         type=float,
         default=DEFAULT_MARGIN_Y,
         help="차량 폭(y) 방향 추가 허용 오차[m] (기본: 0.2)",
+    )
+    parser.add_argument(
+        "--wall-map",
+        default=DEFAULT_WALL_MAP,
+        help=f"벽 좌표 CSV 경로 (기본: {DEFAULT_WALL_MAP})",
+    )
+    parser.add_argument(
+        "--wall-tolerance",
+        type=float,
+        default=0.2,
+        help="벽 좌표 비교 허용 오차[m] (기본: 0.3)",
+    )
+    parser.add_argument(
+        "--static-obstacles",
+        default=DEFAULT_STATIC_MAP,
+        help=f"정적 장애물(map 기준) CSV 경로 (기본: {DEFAULT_STATIC_MAP})",
+    )
+    parser.add_argument(
+        "--static-tolerance",
+        type=float,
+        default=0.02,
+        help="정적 장애물 비교 허용 오차[m] (기본: 0.02)",
+    )
+    parser.add_argument(
+        "--world-to-map-yaw",
+        type=float,
+        default=DEFAULT_WORLD_TO_MAP_YAW,
+        help="Gazebo world → map 회전(rad) (기본: 0.01634..)",
+    )
+    parser.add_argument(
+        "--world-to-map-tx",
+        type=float,
+        default=DEFAULT_WORLD_TO_MAP_TX,
+        help="Gazebo world → map x 병진[m] (기본: 0.4386)",
+    )
+    parser.add_argument(
+        "--world-to-map-ty",
+        type=float,
+        default=DEFAULT_WORLD_TO_MAP_TY,
+        help="Gazebo world → map y 병진[m] (기본: -1.4371)",
     )
     return parser.parse_args()
 
@@ -323,6 +450,8 @@ def process_dynamic_and_scan(
     warned: Dict[str, bool],
     opponent_lookup: Dict[int, Tuple[float, float, float]],
     opponent_box: BoundingBox,
+    wall_index: WallIndex,
+    static_index: StaticObstacleIndex,
 ) -> Tuple[int, int]:
     id_by_name = {name: topic_id for topic_id, (name, _) in topics.items()}
     scan_topic_id = id_by_name.get(scan_topic)
@@ -369,6 +498,8 @@ def process_dynamic_and_scan(
                 warned,
                 opponent_lookup,
                 opponent_box,
+                wall_index,
+                static_index,
             )
             frame_index += 1
             written_rows += frame_written
@@ -423,6 +554,8 @@ def handle_scan_message(
     warned: Dict[str, bool],
     opponent_lookup: Dict[int, Tuple[float, float, float]],
     opponent_box: BoundingBox,
+    wall_index: WallIndex,
+    static_index: StaticObstacleIndex,
 ) -> int:
     try:
         map_to_odom = store.lookup(map_frame, odom_frame, stamp_ns)
@@ -486,6 +619,7 @@ def handle_scan_message(
         point_map = transform_point(map_to_base, point_base)
 
         is_opponent = False
+        opponent_dist = float("inf")
         if opponent_pos is not None:
             opp_x, opp_y, opp_yaw = opponent_pos
             dx = point_map[0] - opp_x
@@ -496,6 +630,30 @@ def handle_scan_message(
             local_y = -sin_yaw * dx + cos_yaw * dy
             if opponent_box.contains_local(local_x, local_y):
                 is_opponent = True
+                opponent_dist = math.hypot(dx, dy)
+
+        is_wall, wall_dist = wall_index.is_wall(point_map[0], point_map[1])
+        is_static, static_dist = static_index.contains(point_map[0], point_map[1])
+        if is_wall and is_static:
+            if wall_dist <= static_dist:
+                is_static = False
+            else:
+                is_wall = False
+
+        label_candidates = []
+        if is_opponent:
+            label_candidates.append(("opponent", opponent_dist))
+        if is_wall:
+            label_candidates.append(("wall", wall_dist))
+        if is_static:
+            label_candidates.append(("static", static_dist))
+        if len(label_candidates) > 1:
+            label = min(label_candidates, key=lambda item: item[1])[0]
+            is_opponent = label == "opponent"
+            is_wall = label == "wall"
+            is_static = label == "static"
+
+        is_free = (not is_opponent) and (not is_wall) and (not is_static)
 
         writer.writerow([
             frame_index,
@@ -508,6 +666,9 @@ def handle_scan_message(
             f"{point_map[0]:.6f}",
             f"{point_map[1]:.6f}",
             is_opponent,
+            is_wall,
+            is_static,
+            is_free,
         ])
         rows_written += 1
 
@@ -562,6 +723,54 @@ def load_opponent_path(csv_path: str) -> Dict[int, Tuple[float, float, float]]:
     return lookup
 
 
+def load_wall_map(csv_path: str, tolerance: float) -> WallIndex:
+    index = WallIndex(tolerance, tolerance)
+    if not os.path.isfile(csv_path):
+        raise FileNotFoundError(f"벽 좌표 CSV를 찾을 수 없습니다: {csv_path}")
+    with open(csv_path, newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            try:
+                x = float(row["x"])
+                y = float(row["y"])
+            except (KeyError, ValueError) as exc:
+                print(f"[warn] {csv_path} 벽 좌표를 읽지 못했습니다: {exc}")
+                continue
+            index.add_point(x, y)
+    return index
+
+
+def load_static_obstacles(
+    csv_path: str,
+    half_length: float,
+    half_width: float,
+    tolerance: float,
+    yaw_offset: float,
+    trans_x: float,
+    trans_y: float,
+) -> StaticObstacleIndex:
+    index = StaticObstacleIndex(half_length, half_width, tolerance)
+    cos_off = math.cos(yaw_offset)
+    sin_off = math.sin(yaw_offset)
+    if not os.path.isfile(csv_path):
+        raise FileNotFoundError(f"정적 장애물 CSV를 찾을 수 없습니다: {csv_path}")
+    with open(csv_path, newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            try:
+                x = float(row["x"])
+                y = float(row["y"])
+                yaw = float(row.get("yaw", "0.0"))
+            except (KeyError, ValueError) as exc:
+                print(f"[warn] {csv_path} 장애물 좌표를 읽지 못했습니다: {exc}")
+                continue
+            map_x = cos_off * x - sin_off * y + trans_x
+            map_y = sin_off * x + cos_off * y + trans_y
+            map_yaw = yaw + yaw_offset
+            index.add_obstacle(map_x, map_y, map_yaw)
+    return index
+
+
 def convert_bag_to_csv(
     bag_path: str,
     output_csv: str,
@@ -572,6 +781,13 @@ def convert_bag_to_csv(
     opponent_csv: str,
     opponent_margin_x: float,
     opponent_margin_y: float,
+    wall_map_csv: str,
+    wall_tolerance: float,
+    static_csv: str,
+    static_tolerance: float,
+    world_to_map_yaw: float,
+    world_to_map_tx: float,
+    world_to_map_ty: float,
 ) -> None:
     if not os.path.isdir(bag_path):
         raise FileNotFoundError(f"rosbag 디렉터리를 찾을 수 없습니다: {bag_path}")
@@ -582,6 +798,16 @@ def convert_bag_to_csv(
 
     transform_store = TransformStore()
     opponent_lookup = load_opponent_path(opponent_csv)
+    wall_index = load_wall_map(wall_map_csv, wall_tolerance)
+    static_index = load_static_obstacles(
+        static_csv,
+        half_length=1.259320 / 2.0,
+        half_width=1.007450 / 2.0,
+        tolerance=static_tolerance,
+        yaw_offset=world_to_map_yaw,
+        trans_x=world_to_map_tx,
+        trans_y=world_to_map_ty,
+    )
     opponent_box = expand_bounding_box(
         CAR_BOUNDING_BOX,
         opponent_margin_x,
@@ -619,6 +845,9 @@ def convert_bag_to_csv(
             "global_x",
             "global_y",
             "isOpponent",
+            "isWall",
+            "isStatic",
+            "isFree",
         ])
 
         for db_file in db_files:
@@ -642,6 +871,8 @@ def convert_bag_to_csv(
                     warned,
                     opponent_lookup,
                     opponent_box,
+                    wall_index,
+                    static_index,
                 )
                 written_rows += rows
             finally:
@@ -668,6 +899,13 @@ def main():
         args.opponent_csv,
         args.opponent_margin_x,
         args.opponent_margin_y,
+        args.wall_map,
+        args.wall_tolerance,
+        args.static_obstacles,
+        args.static_tolerance,
+        args.world_to_map_yaw,
+        args.world_to_map_tx,
+        args.world_to_map_ty,
     )
 
 

@@ -108,7 +108,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
     rviz_enable = LaunchConfiguration("rviz")
 
-    world_path = os.path.join(ferrari_pkg_path, "config", "iccas_track.world")
+    world_path = os.path.join(ferrari_pkg_path, "config", "iccas_track_with_static.world")
     gazebo_pkg_path = get_package_share_directory("gazebo_ros")
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
