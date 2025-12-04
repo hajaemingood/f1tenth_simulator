@@ -471,18 +471,16 @@ class BarOpCostmapVisualizer(Node):
         self.warned.pop("bar_chain_missing", None)
 
         map_to_bar = compose_transform(map_to_base, base_to_bar)
-        car_x, car_y, _ = map_to_base.translation
-        bar_x, bar_y, _ = map_to_bar.translation
-        self.publish_costmap(car_x, car_y, msg.header)
         if self.marker_pub is not None:
             self.publish_markers(
-                map_to_base.translation,
-                map_to_base.rotation,
                 map_to_bar.translation,
+                map_to_bar.rotation,
                 msg.header,
             )
+        self.publish_costmap(map_to_bar.translation, msg.header)
 
-    def publish_costmap(self, center_x: float, center_y: float, header):
+    def publish_costmap(self, center: Tuple[float, float, float], header):
+        center_x, center_y, _ = center
         margin_box = self.margin_bbox
         car_box = self.car_bbox
 
@@ -536,9 +534,8 @@ class BarOpCostmapVisualizer(Node):
 
     def publish_markers(
         self,
-        car_position: Tuple[float, float, float],
-        car_orientation: Tuple[float, float, float, float],
         bar_position: Tuple[float, float, float],
+        bar_orientation: Tuple[float, float, float, float],
         header,
     ):
         center_marker = Marker()
@@ -564,14 +561,14 @@ class BarOpCostmapVisualizer(Node):
         margin_box = self.margin_bbox
 
         car_center = apply_xy_offset(
-            car_position,
-            car_orientation,
+            bar_position,
+            bar_orientation,
             car_box.offset_x,
             car_box.offset_y,
         )
         margin_center = apply_xy_offset(
-            car_position,
-            car_orientation,
+            bar_position,
+            bar_orientation,
             margin_box.offset_x,
             margin_box.offset_y,
         )
@@ -593,10 +590,10 @@ class BarOpCostmapVisualizer(Node):
         bar_marker.pose.position.x = car_center[0]
         bar_marker.pose.position.y = car_center[1]
         bar_marker.pose.position.z = car_center[2] + 0.05
-        bar_marker.pose.orientation.x = car_orientation[0]
-        bar_marker.pose.orientation.y = car_orientation[1]
-        bar_marker.pose.orientation.z = car_orientation[2]
-        bar_marker.pose.orientation.w = car_orientation[3]
+        bar_marker.pose.orientation.x = bar_orientation[0]
+        bar_marker.pose.orientation.y = bar_orientation[1]
+        bar_marker.pose.orientation.z = bar_orientation[2]
+        bar_marker.pose.orientation.w = bar_orientation[3]
 
         margin_marker = Marker()
         margin_marker.header.frame_id = self.map_frame
@@ -615,10 +612,10 @@ class BarOpCostmapVisualizer(Node):
         margin_marker.pose.position.x = margin_center[0]
         margin_marker.pose.position.y = margin_center[1]
         margin_marker.pose.position.z = margin_center[2] + 0.05
-        margin_marker.pose.orientation.x = car_orientation[0]
-        margin_marker.pose.orientation.y = car_orientation[1]
-        margin_marker.pose.orientation.z = car_orientation[2]
-        margin_marker.pose.orientation.w = car_orientation[3]
+        margin_marker.pose.orientation.x = bar_orientation[0]
+        margin_marker.pose.orientation.y = bar_orientation[1]
+        margin_marker.pose.orientation.z = bar_orientation[2]
+        margin_marker.pose.orientation.w = bar_orientation[3]
 
         self.marker_pub.publish(center_marker)
         self.marker_pub.publish(bar_marker)

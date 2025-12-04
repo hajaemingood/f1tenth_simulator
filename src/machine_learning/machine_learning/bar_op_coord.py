@@ -248,6 +248,11 @@ def sec_nsec_to_ns(sec: int, nsec: int) -> int:
     return sec * 1_000_000_000 + nsec
 
 
+def quaternion_to_yaw(q: Tuple[float, float, float, float]) -> float:
+    x, y, z, w = q
+    return math.atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z))
+
+
 def load_tf_static(conn: sqlite3.Connection, store: TransformStore, topics: Dict[int, Tuple[str, str]]):
     static_ids = [
         topic_id
@@ -486,6 +491,7 @@ def handle_scan_frame(
 
     map_to_bar = compose_transform(map_to_base, base_to_bar)
     x, y, _ = map_to_bar.translation
+    yaw = quaternion_to_yaw(map_to_bar.rotation)
 
     writer.writerow([
         frame_index,
@@ -493,6 +499,7 @@ def handle_scan_frame(
         stamp_nsec,
         f"{x:.6f}",
         f"{y:.6f}",
+        f"{yaw:.6f}",
     ])
     return True
 
@@ -540,6 +547,7 @@ def convert_bag_to_csv(
             "stamp_nsec",
             "global_x",
             "global_y",
+            "yaw",
         ])
 
         for db_file in db_files:

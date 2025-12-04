@@ -40,6 +40,9 @@ class BoundingBox:
     left: float   # +y 방향(좌측) 길이
     right: float  # -y 방향(우측) 길이
 
+    def contains_local(self, x: float, y: float) -> bool:
+        return (-self.rear <= x <= self.front) and (-self.right <= y <= self.left)
+
 
 # ferrari_op.xacro 기준 차체 전체를 덮는 기본 박스.
 #  - 앞휘일 중심(0.055m) + 휠 반경(0.05m) → +0.105m
@@ -318,7 +321,7 @@ def process_dynamic_and_scan(
     writer: csv.writer,
     start_frame_index: int,
     warned: Dict[str, bool],
-    opponent_lookup: Dict[int, Tuple[float, float]],
+    opponent_lookup: Dict[int, Tuple[float, float, float]],
     opponent_box: BoundingBox,
 ) -> Tuple[int, int]:
     id_by_name = {name: topic_id for topic_id, (name, _) in topics.items()}
@@ -418,7 +421,7 @@ def handle_scan_message(
     frame_index: int,
     writer: csv.writer,
     warned: Dict[str, bool],
-    opponent_lookup: Dict[int, Tuple[float, float]],
+    opponent_lookup: Dict[int, Tuple[float, float, float]],
     opponent_box: BoundingBox,
 ) -> int:
     try:
@@ -484,12 +487,14 @@ def handle_scan_message(
 
         is_opponent = False
         if opponent_pos is not None:
-            dx = point_map[0] - opponent_pos[0]
-            dy = point_map[1] - opponent_pos[1]
-            if (
-                -opponent_box.rear <= dx <= opponent_box.front
-                and -opponent_box.right <= dy <= opponent_box.left
-            ):
+            opp_x, opp_y, opp_yaw = opponent_pos
+            dx = point_map[0] - opp_x
+            dy = point_map[1] - opp_y
+            cos_yaw = math.cos(opp_yaw)
+            sin_yaw = math.sin(opp_yaw)
+            local_x = cos_yaw * dx + sin_yaw * dy
+            local_y = -sin_yaw * dx + cos_yaw * dy
+            if opponent_box.contains_local(local_x, local_y):
                 is_opponent = True
 
         writer.writerow([
@@ -529,13 +534,13 @@ def extract_points(msg: LaserScan) -> List[Tuple[int, float, float, float]]:
     return points
 
 
-def load_opponent_path(csv_path: str) -> Dict[int, Tuple[float, float]]:
+def load_opponent_path(csv_path: str) -> Dict[int, Tuple[float, float, float]]:
     if not os.path.isfile(csv_path):
         raise FileNotFoundError(
             f"상대 차량 경로 CSV를 찾을 수 없습니다: {csv_path}"
         )
 
-    lookup: Dict[int, Tuple[float, float]] = {}
+    lookup: Dict[int, Tuple[float, float, float]] = {}
     with open(csv_path, newline="") as f:
         reader = csv.DictReader(f)
         for row in reader:
@@ -543,10 +548,11 @@ def load_opponent_path(csv_path: str) -> Dict[int, Tuple[float, float]]:
                 frame = int(row["frame_index"])
                 x = float(row["global_x"])
                 y = float(row["global_y"])
+                yaw = float(row.get("yaw", "0.0"))
             except (KeyError, ValueError) as exc:
                 print(f"[warn] {csv_path} 행을 파싱하지 못했습니다: {exc}")
                 continue
-            lookup[frame] = (x, y)
+            lookup[frame] = (x, y, yaw)
 
     if not lookup:
         raise RuntimeError(
