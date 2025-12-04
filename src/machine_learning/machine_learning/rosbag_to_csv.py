@@ -9,6 +9,7 @@ LaserScan(/scan) 메시지를 읽어 각 프레임마다
   2. 해당 거리 값
   3. base_link 기준 좌표(local_x, local_y)
   4. map 기준 좌표(global_x, global_y)
+  5. 상대 차량(bar_op) 감지 여부(isOpponent)
 를 CSV로 저장한다.
 """
 
@@ -27,8 +28,37 @@ from sensor_msgs.msg import LaserScan
 from tf2_msgs.msg import TFMessage
 
 
-DEFAULT_BAG_PATH = "/root/f1tenth_simulator/src/machine_learning/bagfiles/data_1"
-DEFAULT_OUTPUT = "/root/f1tenth_simulator/src/machine_learning/config/data_1.csv"
+DEFAULT_BAG_PATH = "/root/f1tenth_simulator/src/machine_learning/bagfiles/data_5"
+DEFAULT_OUTPUT = "/root/f1tenth_simulator/src/machine_learning/config/output_5.csv"
+DEFAULT_OPPONENT_CSV = "/root/f1tenth_simulator/src/machine_learning/config/ferrari_op_path_5.csv"
+
+
+@dataclass(frozen=True)
+class BoundingBox:
+    front: float  # +x 방향(전면)으로 뻗어 있는 길이
+    rear: float   # -x 방향(후면)으로 뻗어 있는 길이
+    left: float   # +y 방향(좌측) 길이
+    right: float  # -y 방향(우측) 길이
+
+
+# ferrari_op.xacro 기준 차체 전체를 덮는 기본 박스.
+#  - 앞휘일 중심(0.055m) + 휠 반경(0.05m) → +0.105m
+#  - 뒷바퀴 중심(-0.1m) - 휠 반경(0.05m) → -0.15m
+#  - 바퀴 간격(0.065m) + 휠 반경(0.05m) → ±0.115m
+CAR_BOUNDING_BOX = BoundingBox(front=0.105, rear=0.15, left=0.115, right=0.115)
+
+# 차량 외곽에서 추가로 허용할 오차 범위
+DEFAULT_MARGIN_X = 0.4  # [m]
+DEFAULT_MARGIN_Y = 0.2  # [m]
+
+
+def expand_bounding_box(box: BoundingBox, margin_x: float, margin_y: float) -> BoundingBox:
+    return BoundingBox(
+        front=box.front + margin_x,
+        rear=box.rear + margin_x,
+        left=box.left + margin_y,
+        right=box.right + margin_y,
+    )
 
 
 def parse_args():
@@ -68,6 +98,23 @@ def parse_args():
         "--base-frame",
         default="base_link",
         help="차량 기준 프레임 이름 (기본: base_link)",
+    )
+    parser.add_argument(
+        "--opponent-csv",
+        default=DEFAULT_OPPONENT_CSV,
+        help=f"상대 차량(bar_op) 경로 CSV (기본: {DEFAULT_OPPONENT_CSV})",
+    )
+    parser.add_argument(
+        "--opponent-margin-x",
+        type=float,
+        default=DEFAULT_MARGIN_X,
+        help="차량 길이(x) 방향 추가 허용 오차[m] (기본: 0.4)",
+    )
+    parser.add_argument(
+        "--opponent-margin-y",
+        type=float,
+        default=DEFAULT_MARGIN_Y,
+        help="차량 폭(y) 방향 추가 허용 오차[m] (기본: 0.2)",
     )
     return parser.parse_args()
 
@@ -271,6 +318,8 @@ def process_dynamic_and_scan(
     writer: csv.writer,
     start_frame_index: int,
     warned: Dict[str, bool],
+    opponent_lookup: Dict[int, Tuple[float, float]],
+    opponent_box: BoundingBox,
 ) -> Tuple[int, int]:
     id_by_name = {name: topic_id for topic_id, (name, _) in topics.items()}
     scan_topic_id = id_by_name.get(scan_topic)
@@ -315,6 +364,8 @@ def process_dynamic_and_scan(
                 frame_index,
                 writer,
                 warned,
+                opponent_lookup,
+                opponent_box,
             )
             frame_index += 1
             written_rows += frame_written
@@ -367,6 +418,8 @@ def handle_scan_message(
     frame_index: int,
     writer: csv.writer,
     warned: Dict[str, bool],
+    opponent_lookup: Dict[int, Tuple[float, float]],
+    opponent_box: BoundingBox,
 ) -> int:
     try:
         map_to_odom = store.lookup(map_frame, odom_frame, stamp_ns)
@@ -416,10 +469,28 @@ def handle_scan_message(
     stamp_sec = msg.header.stamp.sec
     stamp_nsec = msg.header.stamp.nanosec
 
+    opponent_pos = opponent_lookup.get(frame_index)
+    if opponent_pos is None:
+        warn_once(
+            warned,
+            "opponent_missing",
+            "[warn] 해당 frame_index에 대한 상대 차량 좌표를 찾을 수 없어 isOpponent=False로 기록합니다.",
+        )
+
     for idx, distance, laser_x, laser_y in points:
         point_laser = (laser_x, laser_y, 0.0)
         point_base = transform_point(base_to_laser, point_laser)
         point_map = transform_point(map_to_base, point_base)
+
+        is_opponent = False
+        if opponent_pos is not None:
+            dx = point_map[0] - opponent_pos[0]
+            dy = point_map[1] - opponent_pos[1]
+            if (
+                -opponent_box.rear <= dx <= opponent_box.front
+                and -opponent_box.right <= dy <= opponent_box.left
+            ):
+                is_opponent = True
 
         writer.writerow([
             frame_index,
@@ -431,6 +502,7 @@ def handle_scan_message(
             f"{point_base[1]:.6f}",
             f"{point_map[0]:.6f}",
             f"{point_map[1]:.6f}",
+            is_opponent,
         ])
         rows_written += 1
 
@@ -457,6 +529,33 @@ def extract_points(msg: LaserScan) -> List[Tuple[int, float, float, float]]:
     return points
 
 
+def load_opponent_path(csv_path: str) -> Dict[int, Tuple[float, float]]:
+    if not os.path.isfile(csv_path):
+        raise FileNotFoundError(
+            f"상대 차량 경로 CSV를 찾을 수 없습니다: {csv_path}"
+        )
+
+    lookup: Dict[int, Tuple[float, float]] = {}
+    with open(csv_path, newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            try:
+                frame = int(row["frame_index"])
+                x = float(row["global_x"])
+                y = float(row["global_y"])
+            except (KeyError, ValueError) as exc:
+                print(f"[warn] {csv_path} 행을 파싱하지 못했습니다: {exc}")
+                continue
+            lookup[frame] = (x, y)
+
+    if not lookup:
+        raise RuntimeError(
+            f"{csv_path}에서 상대 차량 좌표를 읽지 못했습니다."
+        )
+
+    return lookup
+
+
 def convert_bag_to_csv(
     bag_path: str,
     output_csv: str,
@@ -464,6 +563,9 @@ def convert_bag_to_csv(
     map_frame: str,
     odom_frame: str,
     base_frame: str,
+    opponent_csv: str,
+    opponent_margin_x: float,
+    opponent_margin_y: float,
 ) -> None:
     if not os.path.isdir(bag_path):
         raise FileNotFoundError(f"rosbag 디렉터리를 찾을 수 없습니다: {bag_path}")
@@ -473,6 +575,12 @@ def convert_bag_to_csv(
     os.makedirs(os.path.dirname(output_csv) or ".", exist_ok=True)
 
     transform_store = TransformStore()
+    opponent_lookup = load_opponent_path(opponent_csv)
+    opponent_box = expand_bounding_box(
+        CAR_BOUNDING_BOX,
+        opponent_margin_x,
+        opponent_margin_y,
+    )
 
     # 1) tf_static 선처리
     for db_file in db_files:
@@ -504,6 +612,7 @@ def convert_bag_to_csv(
             "local_y",
             "global_x",
             "global_y",
+            "isOpponent",
         ])
 
         for db_file in db_files:
@@ -525,6 +634,8 @@ def convert_bag_to_csv(
                     writer,
                     frame_index,
                     warned,
+                    opponent_lookup,
+                    opponent_box,
                 )
                 written_rows += rows
             finally:
@@ -548,6 +659,9 @@ def main():
         args.map_frame,
         args.odom_frame,
         args.base_frame,
+        args.opponent_csv,
+        args.opponent_margin_x,
+        args.opponent_margin_y,
     )
 
 

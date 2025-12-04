@@ -14,8 +14,9 @@ import math
 import os
 import sqlite3
 from bisect import bisect_right
+from collections import deque
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 import yaml
 from rclpy.serialization import deserialize_message
@@ -23,8 +24,8 @@ from sensor_msgs.msg import LaserScan
 from tf2_msgs.msg import TFMessage
 
 
-DEFAULT_BAG_PATH = "/root/f1tenth_simulator/src/machine_learning/bagfiles/data_1"
-DEFAULT_OUTPUT = "/root/f1tenth_simulator/src/machine_learning/config/ferrari_op_path.csv"
+DEFAULT_BAG_PATH = "/root/f1tenth_simulator/src/machine_learning/bagfiles/data_5"
+DEFAULT_OUTPUT = "/root/f1tenth_simulator/src/machine_learning/config/ferrari_op_path_5.csv"
 
 
 def parse_args():
@@ -69,6 +70,15 @@ def parse_args():
         "--bar-frame",
         default="bar_op",
         help="bar 프레임 이름 (기본: bar_op)",
+    )
+    parser.add_argument(
+        "--bar-chain",
+        nargs="+",
+        default=None,
+        help=(
+            "bar 프레임까지 도달하기 위한 중간 프레임 목록을 지정합니다. "
+            "예) --bar-chain body_op"
+        ),
     )
     return parser.parse_args()
 
@@ -134,6 +144,11 @@ class TransformStore:
     def __init__(self):
         self.static: Dict[Tuple[str, str], TransformData] = {}
         self.dynamic: Dict[Tuple[str, str], TransformHistory] = {}
+        self.children: Dict[str, Set[str]] = {}
+        self.cached_paths: Dict[Tuple[str, str], List[str]] = {}
+
+    def _record_edge(self, parent: str, child: str):
+        self.children.setdefault(parent, set()).add(child)
 
     def add_transform(
         self,
@@ -144,6 +159,7 @@ class TransformStore:
         is_static: bool,
     ):
         key = (parent, child)
+        self._record_edge(parent, child)
         if is_static:
             self.static[key] = transform
             return
@@ -160,8 +176,30 @@ class TransformStore:
             raise KeyError(f"{parent}->{child} transform not found")
         return history.lookup(stamp_ns)
 
+    def get_frame_chain(self, start: str, end: str) -> Optional[List[str]]:
+        key = (start, end)
+        cached = self.cached_paths.get(key)
+        if cached is not None:
+            return cached
+
+        queue = deque([(start, [start])])
+        visited = {start}
+
+        while queue:
+            current, path = queue.popleft()
+            if current == end:
+                self.cached_paths[key] = path
+                return path
+            for child in self.children.get(current, ()):
+                if child in visited:
+                    continue
+                visited.add(child)
+                queue.append((child, path + [child]))
+        return None
+
 
 IDENTITY_ROT = (0.0, 0.0, 0.0, 1.0)
+IDENTITY_TRANSFORM = TransformData((0.0, 0.0, 0.0), IDENTITY_ROT)
 
 
 def normalize_quaternion(q: Tuple[float, float, float, float]) -> Tuple[float, float, float, float]:
@@ -264,6 +302,7 @@ def process_dynamic_and_scan(
     odom_frame: str,
     base_frame: str,
     bar_frame: str,
+    bar_chain: Optional[List[str]],
     writer: csv.writer,
     start_frame_index: int,
     warned: Dict[str, bool],
@@ -301,21 +340,23 @@ def process_dynamic_and_scan(
         if scan_topic_id is not None and topic_id == scan_topic_id:
             msg = deserialize_message(data, LaserScan)
             stamp_ns = sec_nsec_to_ns(msg.header.stamp.sec, msg.header.stamp.nanosec)
-            if handle_scan_frame(
+            processed = handle_scan_frame(
                 store,
                 stamp_ns,
                 map_frame,
                 odom_frame,
                 base_frame,
                 bar_frame,
+                bar_chain,
                 frame_index,
                 msg.header.stamp.sec,
                 msg.header.stamp.nanosec,
                 writer,
                 warned,
-            ):
-                frame_index += 1
+            )
+            if processed:
                 written_rows += 1
+            frame_index += 1
         else:
             tf_msg = deserialize_message(data, TFMessage)
             for transform in tf_msg.transforms:
@@ -355,6 +396,52 @@ def warn_once(warned: Dict[str, bool], key: str, message: str):
         warned[key] = True
 
 
+def compose_transform_chain(
+    store: TransformStore,
+    frames: List[str],
+    stamp_ns: int,
+    warned: Dict[str, bool],
+) -> Optional[TransformData]:
+    transform = IDENTITY_TRANSFORM
+    for parent, child in zip(frames, frames[1:]):
+        try:
+            next_transform = store.lookup(parent, child, stamp_ns)
+        except KeyError:
+            warn_once(
+                warned,
+                f"{parent}_{child}_missing",
+                f"[warn] {parent}→{child} 변환을 {stamp_ns}ns 시각에서 찾을 수 없습니다.",
+            )
+            return None
+        transform = compose_transform(transform, next_transform)
+    return transform
+
+
+def resolve_bar_transform(
+    store: TransformStore,
+    base_frame: str,
+    bar_frame: str,
+    bar_chain: Optional[List[str]],
+    stamp_ns: int,
+    warned: Dict[str, bool],
+) -> Optional[TransformData]:
+    if bar_chain:
+        frames = [base_frame, *bar_chain, bar_frame]
+    else:
+        frames = store.get_frame_chain(base_frame, bar_frame)
+        if frames is None:
+            warn_once(
+                warned,
+                "bar_chain_missing",
+                (
+                    f"[warn] {base_frame}에서 {bar_frame}까지 이어지는 TF 체인을 찾을 수 없습니다. "
+                    "필요 시 --bar-chain 옵션으로 중간 프레임을 지정하세요."
+                ),
+            )
+            return None
+    return compose_transform_chain(store, frames, stamp_ns, warned)
+
+
 def handle_scan_frame(
     store: TransformStore,
     stamp_ns: int,
@@ -362,6 +449,7 @@ def handle_scan_frame(
     odom_frame: str,
     base_frame: str,
     bar_frame: str,
+    bar_chain: Optional[List[str]],
     frame_index: int,
     stamp_sec: int,
     stamp_nsec: int,
@@ -390,15 +478,10 @@ def handle_scan_frame(
 
     map_to_base = compose_transform(map_to_odom, odom_to_base)
 
-    # base_link_op -> bar_op 변환
-    try:
-        base_to_bar = store.lookup(base_frame, bar_frame, stamp_ns)
-    except KeyError:
-        warn_once(
-            warned,
-            "base_bar_missing",
-            f"[warn] {base_frame}→{bar_frame} 변환을 {stamp_ns}ns 시각에서 찾을 수 없습니다.",
-        )
+    base_to_bar = resolve_bar_transform(
+        store, base_frame, bar_frame, bar_chain, stamp_ns, warned
+    )
+    if base_to_bar is None:
         return False
 
     map_to_bar = compose_transform(map_to_base, base_to_bar)
@@ -422,6 +505,7 @@ def convert_bag_to_csv(
     odom_frame: str,
     base_frame: str,
     bar_frame: str,
+    bar_chain: Optional[List[str]],
 ) -> None:
     if not os.path.isdir(bag_path):
         raise FileNotFoundError(f"rosbag 디렉터리를 찾을 수 없습니다: {bag_path}")
@@ -475,6 +559,7 @@ def convert_bag_to_csv(
                     odom_frame,
                     base_frame,
                     bar_frame,
+                    bar_chain,
                     writer,
                     frame_index,
                     warned,
@@ -503,6 +588,7 @@ def main():
         args.odom_frame,
         args.base_frame,
         args.bar_frame,
+        args.bar_chain,
     )
 
 
