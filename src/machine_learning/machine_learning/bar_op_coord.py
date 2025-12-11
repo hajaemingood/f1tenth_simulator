@@ -24,8 +24,8 @@ from sensor_msgs.msg import LaserScan
 from tf2_msgs.msg import TFMessage
 
 
-DEFAULT_BAG_PATH = "/root/f1tenth_simulator/src/machine_learning/bagfiles/data_7"
-DEFAULT_OUTPUT = "/root/f1tenth_simulator/src/machine_learning/config/ferrari_op_path_7.csv"
+DEFAULT_BAG_PATH = "/root/f1tenth_simulator/src/machine_learning/bagfiles/data_3"
+DEFAULT_OUTPUT = "/root/f1tenth_simulator/src/machine_learning/outputs/ferrari_op_path_3.csv"
 
 
 def parse_args():

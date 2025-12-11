@@ -31,9 +31,9 @@ from sensor_msgs.msg import LaserScan
 from tf2_msgs.msg import TFMessage
 
 
-DEFAULT_BAG_PATH = "/root/f1tenth_simulator/src/machine_learning/bagfiles/data_7"
-DEFAULT_OUTPUT = "/root/f1tenth_simulator/src/machine_learning/config/output_7.csv"
-DEFAULT_OPPONENT_CSV = "/root/f1tenth_simulator/src/machine_learning/config/ferrari_op_path_7.csv"
+DEFAULT_BAG_PATH = "/root/f1tenth_simulator/src/machine_learning/bagfiles/data_3"
+DEFAULT_OUTPUT = "/root/f1tenth_simulator/src/machine_learning/outputs/output_3.csv"
+DEFAULT_OPPONENT_CSV = "/root/f1tenth_simulator/src/machine_learning/outputs/ferrari_op_path_3.csv"
 DEFAULT_WALL_MAP = "/root/f1tenth_simulator/src/machine_learning/config/map_coord.csv"
 DEFAULT_STATIC_MAP = "/root/f1tenth_simulator/src/machine_learning/config/isStatic_coord.csv"
 DEFAULT_WORLD_TO_MAP_YAW = 0.016341999999999857
