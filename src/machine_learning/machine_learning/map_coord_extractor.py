@@ -8,7 +8,7 @@ import math
 import os
 
 # 사용자 입력 부분 ----------------------------------------------------------------
-yaml_path = "/root/f1tenth_simulator/src/ferrari/maps/iccas_track.yaml"   # 여기에 yaml 파일 경로 입력
+yaml_path = "/root/f1tenth_simulator/src/ferrari/maps/intersection.yaml"   # 여기에 yaml 파일 경로 입력
 output_csv = "/root/f1tenth_simulator/src/machine_learning/config/map_coord.csv"  # 저장할 CSV 파일 경로 입력
 threshold = 100    # 0~255 값 중 벽을 인식할 임계값 (어두울수록 벽)
 include_border = True      # 맵 이미지 경계선 전체를 벽으로 가정할지 여부

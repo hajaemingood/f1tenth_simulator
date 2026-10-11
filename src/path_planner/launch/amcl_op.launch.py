@@ -20,7 +20,7 @@ def generate_launch_description() -> LaunchDescription:
     initial_pose_yaw = LaunchConfiguration("initial_pose_yaw")
 
     declare_use_sim_time = DeclareLaunchArgument("use_sim_time", default_value="true")
-    default_map_yaml = os.path.join(ferrari_share, "maps", "iccas_track.yaml")
+    default_map_yaml = os.path.join(ferrari_share, "maps", "two_hairpins.yaml")
 
     declare_map = DeclareLaunchArgument(
         "map",

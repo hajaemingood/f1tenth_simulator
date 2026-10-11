@@ -18,7 +18,7 @@ class PurePursuitNode(Node):
             "waypoints_csv",
             "/root/f1tenth_simulator/src/path_planner/path_planner/waypoints.csv",
         )
-        self.declare_parameter("lookahead_distance", 1.2)
+        self.declare_parameter("lookahead_distance", 1.5) # 1.2
 
         self.waypoints_path = self.get_parameter("waypoints_csv").get_parameter_value().string_value
         self.lookahead_distance = (
@@ -87,11 +87,11 @@ class PurePursuitNode(Node):
             self.get_logger().warn("Steering angle too close to zero; skipping velocity calculation.")
 
         if steering_angle > 0.65 or steering_angle < 0.35:
-            velocity = 7000.0
+            velocity = 20000 # 7000.0
         elif steering_angle > 0.875 or steering_angle < 0.175:
-            velocity = 5000.0
+            velocity = 13000  # 5000.0
         else:
-            velocity = 10000.0
+            velocity = 25000.0 # 10000.0
 
         self.speed_msg.data = float(velocity)
         self.steer_msg.data = steering_angle

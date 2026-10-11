@@ -31,14 +31,16 @@ from sensor_msgs.msg import LaserScan
 from tf2_msgs.msg import TFMessage
 
 
-DEFAULT_BAG_PATH = "/root/f1tenth_simulator/src/machine_learning/bagfiles/data_3"
-DEFAULT_OUTPUT = "/root/f1tenth_simulator/src/machine_learning/outputs/output_3.csv"
-DEFAULT_OPPONENT_CSV = "/root/f1tenth_simulator/src/machine_learning/outputs/ferrari_op_path_3.csv"
+DEFAULT_BAG_PATH = "/root/f1tenth_simulator/src/machine_learning/bagfiles/intersection"
+DEFAULT_OUTPUT = "/root/f1tenth_simulator/src/machine_learning/outputs/intersection.csv"
+DEFAULT_OPPONENT_CSV = "/root/f1tenth_simulator/src/machine_learning/outputs/intersection_ferrari_op.csv"
 DEFAULT_WALL_MAP = "/root/f1tenth_simulator/src/machine_learning/config/map_coord.csv"
 DEFAULT_STATIC_MAP = "/root/f1tenth_simulator/src/machine_learning/config/isStatic_coord.csv"
-DEFAULT_WORLD_TO_MAP_YAW = 0.016341999999999857
-DEFAULT_WORLD_TO_MAP_TX = 0.43860305302501423
-DEFAULT_WORLD_TO_MAP_TY = -1.4371280282927352
+# map(origin)과 Gazebo world(=odom) 간 최신 정합값
+# (dual_ferrari.launch spawn ↔ dual_amcl initial pose 기반; intersection track)
+DEFAULT_WORLD_TO_MAP_YAW = -0.01745400000000008
+DEFAULT_WORLD_TO_MAP_TX = 0.058058677649609223
+DEFAULT_WORLD_TO_MAP_TY = 0.04124268037601304
 
 
 @dataclass(frozen=True)
@@ -214,7 +216,7 @@ def parse_args():
     parser.add_argument(
         "--wall-tolerance",
         type=float,
-        default=0.2,
+        default=0.1,
         help="벽 좌표 비교 허용 오차[m] (기본: 0.3)",
     )
     parser.add_argument(
@@ -225,7 +227,7 @@ def parse_args():
     parser.add_argument(
         "--static-tolerance",
         type=float,
-        default=0.02,
+        default=0.1,
         help="정적 장애물 비교 허용 오차[m] (기본: 0.02)",
     )
     parser.add_argument(
@@ -801,8 +803,8 @@ def convert_bag_to_csv(
     wall_index = load_wall_map(wall_map_csv, wall_tolerance)
     static_index = load_static_obstacles(
         static_csv,
-        half_length=1.259320 / 2.0,
-        half_width=1.007450 / 2.0,
+        half_length=0.50 / 2.0,
+        half_width=0.40 / 2.0,
         tolerance=static_tolerance,
         yaw_offset=world_to_map_yaw,
         trans_x=world_to_map_tx,

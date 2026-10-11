@@ -32,7 +32,7 @@ def generate_launch_description():
     world_path = os.path.join(
         get_package_share_directory(package_name),
         "config",
-        "iccas_track.world"  
+        "two_hairpins.world"  
     )
 
     gazebo = IncludeLaunchDescription(

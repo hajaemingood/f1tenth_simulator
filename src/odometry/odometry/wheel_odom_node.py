@@ -93,7 +93,7 @@ class WheelOdomNode(Node):
             Float64, '/ferrari/commands/motor/speed', self.cb_motor, 20 # /commands/motor/speed 
         )
         self.sub_servo = self.create_subscription(
-            Float64, '/ferrari/commands/servo/position', self.cb_servo, 20 # /commands/servo/position
+            Float64, '/ferrari/commands/servo/position', self.cb_servo, 20 # /ferrari/commands/servo/position
         )
 
         if self.use_imu_heading:

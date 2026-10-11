@@ -1,0 +1,7 @@
+image: one_hairpin.pgm
+mode: trinary
+resolution: 0.05
+origin: [-9.69, -6.96, 0]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.25

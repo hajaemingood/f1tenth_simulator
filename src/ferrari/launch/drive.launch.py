@@ -24,7 +24,7 @@ def generate_launch_description():
     world_path = os.path.join(
         get_package_share_directory(package_name),
         "config",
-        "with_robot.world"
+        "two_Lshape.world"
     )
 
     # Include the Gazebo launch file, provided by the gazebo_ros package

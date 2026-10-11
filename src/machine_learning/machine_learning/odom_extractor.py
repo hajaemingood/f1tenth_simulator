@@ -20,8 +20,8 @@ from sensor_msgs.msg import LaserScan
 from tf2_msgs.msg import TFMessage
 
 
-DEFAULT_BAG_PATH = "/root/f1tenth_simulator/src/machine_learning/bagfiles/data_3"
-DEFAULT_OUTPUT = "/root/f1tenth_simulator/src/machine_learning/outputs/ferrari_links_3.csv"
+DEFAULT_BAG_PATH = "/root/f1tenth_simulator/src/machine_learning/bagfiles/intersection"
+DEFAULT_OUTPUT = "/root/f1tenth_simulator/src/machine_learning/outputs/intersection_odom_output.csv"
 DEFAULT_SCAN_TOPIC = "/ferrari/scan"
 DEFAULT_LINK_SPECS = ("base_link:odom", "base_link_op:odom_op")
 

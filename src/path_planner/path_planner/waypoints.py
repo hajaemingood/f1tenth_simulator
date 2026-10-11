@@ -10,8 +10,8 @@ import pandas as pd
 from pathlib import Path
 
 # ================= 사용자 설정 =================
-YAML_PATH = "/root/f1tenth_simulator/src/ferrari/maps/iccas_track.yaml"     # 예: "columbia.yaml"
-PGM_PATH = "/root/f1tenth_simulator/src/ferrari/maps/iccas_track.pgm"       # 예: "columbia.pgm"
+YAML_PATH = "/root/f1tenth_simulator/src/ferrari/maps/intersection.yaml"     # 예: "columbia.yaml"
+PGM_PATH = "/root/f1tenth_simulator/src/ferrari/maps/intersection.pgm"       # 예: "columbia.pgm"
 OUTPUT_PREFIX = "/root/f1tenth_simulator/src/path_planner/path_planner/waypoints"      # 저장 prefix
 
 # 에디팅/리샘플/스무딩

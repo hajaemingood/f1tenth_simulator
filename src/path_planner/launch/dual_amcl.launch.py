@@ -73,7 +73,7 @@ def generate_launch_description() -> LaunchDescription:
     ferrari_op_init_y = LaunchConfiguration("ferrari_op_initial_pose_y")
     ferrari_op_init_yaw = LaunchConfiguration("ferrari_op_initial_pose_yaw")
 
-    default_map_yaml = os.path.join(ferrari_share, "maps", "iccas_track.yaml")
+    default_map_yaml = os.path.join(ferrari_share, "maps", "intersection.yaml")
 
     declare_use_sim_time = DeclareLaunchArgument("use_sim_time", default_value="true")
     declare_map = DeclareLaunchArgument(
@@ -92,13 +92,13 @@ def generate_launch_description() -> LaunchDescription:
         "ferrari_scan_topic", default_value="/ferrari/scan"
     )
     declare_ferrari_init_x = DeclareLaunchArgument(
-        "ferrari_initial_pose_x", default_value="-4.771"
+        "ferrari_initial_pose_x", default_value="-7.741"
     )
     declare_ferrari_init_y = DeclareLaunchArgument(
-        "ferrari_initial_pose_y", default_value="-0.639"
+        "ferrari_initial_pose_y", default_value="-7.008"
     )
     declare_ferrari_init_yaw = DeclareLaunchArgument(
-        "ferrari_initial_pose_yaw", default_value="-1.584"
+        "ferrari_initial_pose_yaw", default_value="0.819"
     )
 
     declare_ferrari_op_base_frame = DeclareLaunchArgument(
@@ -111,13 +111,13 @@ def generate_launch_description() -> LaunchDescription:
         "ferrari_op_scan_topic", default_value="/ferrari_op/scan"
     )
     declare_ferrari_op_init_x = DeclareLaunchArgument(
-        "ferrari_op_initial_pose_x", default_value="-0.623"
+        "ferrari_op_initial_pose_x", default_value="-0.564"
     )
     declare_ferrari_op_init_y = DeclareLaunchArgument(
-        "ferrari_op_initial_pose_y", default_value="-0.058"
+        "ferrari_op_initial_pose_y", default_value="-0.263"
     )
     declare_ferrari_op_init_yaw = DeclareLaunchArgument(
-        "ferrari_op_initial_pose_yaw", default_value="1.565"
+        "ferrari_op_initial_pose_yaw", default_value="0.765"
     )
 
     map_server_node = Node(

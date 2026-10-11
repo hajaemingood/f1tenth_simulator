@@ -20,9 +20,10 @@ from nav_msgs.msg import OccupancyGrid
 
 
 DEFAULT_STATIC_CSV = "/root/f1tenth_simulator/src/machine_learning/config/isStatic_coord.csv"
-HALF_LENGTH = 1.259320 / 2.0
-HALF_WIDTH = 1.007450 / 2.0
-DEFAULT_MARGIN = 0.02
+# cardboard_box collision geometry: 0.5 x 0.4 x 0.3 (see ~/.gazebo/models/cardboard_box)
+HALF_LENGTH = 0.50 / 2.0
+HALF_WIDTH = 0.40 / 2.0
+DEFAULT_MARGIN = 0.1
 
 
 @dataclass
@@ -54,10 +55,10 @@ class StaticObstacleVisualizer(Node):
         self.declare_parameter("resolution", 0.02)
         self.declare_parameter("margin", DEFAULT_MARGIN)
         # Gazebo world(=odom) → map 프레임 고정 변환 파라미터.
-        # 기본값은 ferrari_spawn_pose ↔ AMCL initial pose에서 계산한 값.
-        self.declare_parameter("world_to_map_yaw", 0.016341999999999857)
-        self.declare_parameter("world_to_map_tx", 0.43860305302501423)
-        self.declare_parameter("world_to_map_ty", -1.4371280282927352)
+        # 기본값은 dual_ferrari.launch spawn 대비 dual_amcl initial pose 정합(intersection track).
+        self.declare_parameter("world_to_map_yaw", -0.01745400000000008)
+        self.declare_parameter("world_to_map_tx", 0.058058677649609223)
+        self.declare_parameter("world_to_map_ty", 0.04124268037601304)
 
         csv_path = self.get_parameter("static_csv").value
         self.resolution = float(self.get_parameter("resolution").value)
