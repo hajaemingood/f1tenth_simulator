@@ -160,7 +160,7 @@ python3 src/machine_learning/machine_learning/rosbag_to_csv.py \
 | `global_x`, `global_y` | `map` 기준 점 좌표 |
 | `isOpponent`, `isWall`, `isStatic`, `isFree` | 포인트별 boolean 분류 라벨 |
 
-생성된 파일은 `src/machine_learning/outputs/`에서 확인한다. 프레임에 대응하는 상대 차량 TF가 bag에 없으면 상대 차량 위치를 찾을 수 없다는 경고가 출력되고 그 프레임의 `isOpponent`은 모두 `False`가 될 수 있으므로, 경고와 결과 CSV를 반드시 확인한다.
+생성된 파일은 `src/machine_learning/outputs/`에서 확인한다. 이 경로의 CSV는 생성 결과물이므로 Git에서 무시되며, 필요한 결과는 별도로 보관한다. 프레임에 대응하는 상대 차량 TF가 bag에 없으면 상대 차량 위치를 찾을 수 없다는 경고가 출력되고 그 프레임의 `isOpponent`은 모두 `False`가 될 수 있으므로, 경고와 결과 CSV를 반드시 확인한다.
 
 차량 자세를 별도 분석할 필요가 있으면 다음 추출기를 추가로 실행할 수 있다. 이 CSV는 라이다 포인트 학습용 CSV와 별개의 차량 궤적 결과다.
 

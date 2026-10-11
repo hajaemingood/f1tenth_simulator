@@ -19,5 +19,5 @@ src/ferrari/bagfiles/
 *.db3
 *.mcap
 
-# Generated machine-learning and analysis output
+# 생성된 학습/분석 결과 CSV
 /src/machine_learning/outputs/*.csv
